@@ -1,0 +1,293 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Directory REST API for Connected Building
+  description: |
+    This is the REST API to search for people, departments, agencies, subsidiaries and themes.
+
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/). 
+
+    This API is used by the mobile application developed by Schneider/Cardiweb
+    in the context of the **Connected Building** project, for the new buildings **Les Dunes**
+    in **Val de Fontenay**.
+
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, each response contains either a data or an error as the top level object. 
+
+    ### Security
+    This API is secure using the in house **GAIA** solution.
+
+    For each call to the API, both the SSO token GAIA and the Domain token GAIA must be provided in the HTTP headers:
+    ```
+    <sso-token-name>: <sso-token-value>
+    Authorization: Bearer <domain-token-value>
+    ```
+    ### Changelog
+    * v1.0.0: initial proposal
+
+host: apps.mybuilding.socgen.com
+basePath: /directory/api/v1
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+## Path /people ########################################################
+  /people:
+    get:
+      description: Returns the people matching the query
+      parameters:
+        - name: query
+          in: query
+          description: Terms used for the fuzzy phonetic full text search
+          required: true
+          type: string
+        - name: skip
+          in: query
+          description: Number of results to skip
+          required: true
+          type: integer
+        - name: limit
+          in: query
+          description: Number of maximum results to return
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Success. Returns a list of people.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Person'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /departments ########################################################
+  /departments:
+    get:
+      description: Returns the people matching the query
+      parameters:
+        - name: query
+          in: query
+          description: Terms used for the fuzzy phonetic full text search
+          required: true
+          type: string
+        - name: skip
+          in: query
+          description: Number of results to skip
+          required: true
+          type: integer
+        - name: limit
+          in: query
+          description: Number of maximum results to return
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Success. Returns a list of departments.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Department'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /agencies ########################################################
+  /agencies:
+    get:
+      description: Returns the agencies matching the query
+      parameters:
+        - name: query
+          in: query
+          description: Terms used for the fuzzy phonetic full text search
+          required: true
+          type: string
+        - name: skip
+          in: query
+          description: Number of results to skip
+          required: true
+          type: integer
+        - name: limit
+          in: query
+          description: Number of maximum results to return
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Success. Returns a list of agencies.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Agency'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+## Path /subsidiaries ########################################################
+  /subsidiaries:
+    get:
+      description: Returns the subsidiaries matching the query
+      parameters:
+        - name: query
+          in: query
+          description: Terms used for the fuzzy phonetic full text search
+          required: true
+          type: string
+        - name: skip
+          in: query
+          description: Number of results to skip
+          required: true
+          type: integer
+        - name: limit
+          in: query
+          description: Number of maximum results to return
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Success. Returns a list of subsidiaries.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Subsidiary'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+## Path /themes ########################################################
+  /themes:
+    get:
+      description: Returns the themes matching the query
+      parameters:
+        - name: query
+          in: query
+          description: Terms used for the fuzzy phonetic full text search
+          required: true
+          type: string
+        - name: skip
+          in: query
+          description: Number of results to skip
+          required: true
+          type: integer
+        - name: limit
+          in: query
+          description: Number of maximum results to return
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Success. Returns a list of themes.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Theme'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Person:
+    description: Person data
+    type: object
+    properties:
+      id:
+        type: string
+        description: Identifier of the person
+      building:
+        type: string
+        description: Name of the building where the person is working (e.g. "CB3")
+      company:
+        type: string
+        description: Name of the company for which the person is working (e.g. "Sopra Steria", empty if the person is not a contractor)
+      email:
+        type: string
+        description: Email of the person        
+      entity:
+        type: string
+        description: Entity of the person
+      firstname:
+        type: string
+        description: Firstname of the person        
+      lastname:
+        type: string
+        description: Lastname of the person
+      phone:
+        type: string
+        description: Phone of the person
+      cellphone:
+        type: string
+        description: Cellphone of the person
+      picture:
+        type: string
+        description: Base64 encoded picture of the person
+      subsidiary:
+        type: string
+        description: Name of the subsidiary for which the person is working (e.g. "Banque de Polynésie")
+      score:
+        type: float
+        description: The score of the person
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
