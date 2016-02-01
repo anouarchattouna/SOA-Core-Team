@@ -1,0 +1,374 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Rooms REST API for Connected Building
+  description: |
+    This is the REST API to book a room for a meeting.
+
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/). 
+    Just copy/paste the content of this YAML in the left pane of the Swagger editor.
+    The right pane will show you the well formatted documentation. 
+
+    This API is used by the mobile application developed by Schneider/Cardiweb
+    in the context of the **Connected Building** project, for the new buildings **Les Dunes**
+    in **Val de Fontenay**.
+
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, each response contains either a data or an error as the top level object. 
+
+    ### About the identification of a booking
+    The WS Rooms is a proxy of an existing GTS Booking Service. **Currently, the GTS Booking Service does NOT handle 
+    a booking identifier**. So currently, a booking is identified using the tuple (roomId, startDateTime, endDatetime).
+    It is expected than a new version of the GTS Booking Service will handle a standard booking identfier.
+    
+    So in the spec of the Rooms API, **we sometimes provide 2 operations (for the same functional action)**, 
+    one with a standard booking identifier (to prepare the futur) and one with an identifier of the form 
+    (roomId, startDateTime, endDatetime) to be compliant with the current GTS Booking Service.
+
+    ### Security
+    This API is secure using the in house **GAIA** solution.
+
+    For each call to the API, both the SSO token GAIA and the Domain token GAIA must be provided in the HTTP headers:
+    ```
+    <sso-token-name>: <sso-token-value>
+    Authorization: Bearer <domain-token-value>
+    ```
+    ### Changelog
+    * v1.0.1: tbd
+    * v1.0.0: initial proposal
+
+host: apps.mybuilding.socgen.com
+basePath: /rooms/api/v1
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  bookingId:
+    name: bookingId
+    in: path
+    description: The id of the booking
+    type: string
+    required: true
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+## Path /rooms ########################################################
+  /rooms:
+    get:
+      description: Returns the rooms of a building
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the building (e.g. "FR")
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay")
+          required: true
+          type: string
+        - name: building
+          in: query
+          description: Building name for which the rooms are searched (e.g. "LesDunes-A")
+          required: true
+          type: string
+        - name: floor
+          in: query
+          description: Floor name for which the rooms are searched (e.g. "A11")
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of rooms.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Room'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /bookings ########################################################
+  /bookings:
+    get:
+      description: Returns the bookings of a room
+      parameters:
+        - name: room
+          in: query
+          description: Room for which the bookings are searched
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search" 
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of bookings for the room.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Booking'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      description: Creates a booking for a room
+      parameters:
+        - name: body
+          in: body
+          description: Booking data
+          required: true
+          schema:
+            $ref: '#/definitions/Booking'
+      responses:
+        "201":
+          description: "Success. If bookingId is handled/available, returns the URL of the booking in the location header."
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      description: |
+        Updates a booking, using the booking identifier of the form (roomId, startEndtime, endDatetime) 
+      parameters:
+        - name: roomId
+          in: query
+          description: Room for which to update the booking
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: |
+            Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to update
+            (startDatetime of the old meeting , NOT the startDatetime of the new meeting, but can be the same if unmodified)
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: |
+            End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to update
+            (endDatetime of the old meeting , NOT the endDatetime of the new meeting, but can be the same if unmodified)
+          required: true
+          type: string        
+        - name: body
+          in: body
+          description: New booking data
+          required: true
+          schema:
+            $ref: '#/definitions/Booking'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      description: "Deletes a booking for a room, using a booking identifier of the form (roomId, startDatetime, endDatetime)"
+      parameters:
+        - name: roomId
+          in: query
+          description: Room for which to delete the booking
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to delete"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to delete" 
+          required: true
+          type: string
+      responses:
+        "204":
+          description: Success (204=No Content)
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path bookings/{bookingId} ########################################################
+  /bookings/{bookingId}:
+    parameters:
+      - $ref: '#/parameters/bookingId'
+    get:
+      description: |
+        Returns a booking, using a standard booking identifier 
+        (such identifier is **currently NOT available**)
+      responses:
+        "200":
+          description: Success. Returns a booking.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                $ref: '#/definitions/Booking'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      description: |
+        Updates a booking, using a standard booking identifier 
+        (such identifier is **currently NOT available**)
+      parameters:
+        - name: body
+          in: body
+          description: Booking data
+          required: true
+          schema:
+            $ref: '#/definitions/Booking'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      description: |
+        Deletes a booking for a room, using a standard booking identifier 
+        (such identifier is **currently NOT available**)
+      responses:
+        "204":
+          description: Success (204=No Content)
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Room:
+    description: Room data
+    type: object
+    properties:
+      id:
+        type: string
+        description: Id of the room
+      name:
+        type: string
+        description: Name of the room (e.g. "C11")
+      isPublic:
+        type: boolean
+        description: Is the room public (vs private) ?
+      capacity:
+        type: integer
+        description: Max number of people in the room        
+      equipments:
+          $ref: '#/definitions/RoomEquipments'
+      thumbnailAsBase64:
+        type: string
+        description: Thumbnail of the room encoded using Base64
+
+  RoomEquipments:
+    description: "Equipements of a room (telephone, video projector...)"
+    type: object
+    properties:
+      telephone:
+        type: boolean
+      audioConf:
+        type: boolean
+      videoConf:
+        type: boolean
+      videoProjector:
+        type: boolean        
+      television:
+        type: boolean
+      smartScreen:
+        type: boolean
+      others:
+        type: array
+        items:
+          type: string
+        description: Other equipments (non standard equipements)
+
+  Booking:
+    description: "Booking/schedule of a room for a meeting"
+    type: object
+    properties:
+      bookingId:
+        type: string
+        description: |
+          Id of the booking. 
+          If is null, use (roomId, startDatetime, endDatetime) to identify a booking.
+      roomId:
+        type: string
+        description: Id of the booked room or room to book
+      startDatetime:
+        type: string
+        description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
+      endDatetime:
+        type: string
+        description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
+      owner:
+        type: string
+        description: Owner/chairman of the meeting
+      object:
+        type: string
+        description: Object/Title of the meeting
+      mandatoryParticipants:
+        type: string
+        description: Comma separated list of mandatory participants of the meeting (emails of the participants)
+      optionalParticipants:
+        type: string
+        description: Comma separated list of optional participants of the meeting (emails of the participants)
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
