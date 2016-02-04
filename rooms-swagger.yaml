@@ -41,8 +41,8 @@ info:
     ### Changelog
     * v1.0.0: initial proposal
 
-host: apps.mybuilding.socgen.com
-basePath: /rooms/api/v1
+host: apps.socgen.com/mybuilding
+basePath: /api/hermes/v1
 schemes:
   - https
 consumes:
