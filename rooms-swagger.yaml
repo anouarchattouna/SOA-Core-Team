@@ -312,7 +312,7 @@ definitions:
         type: integer
         description: Max number of people in the room        
       equipments:
-          $ref: '#/definitions/RoomEquipments'
+        $ref: '#/definitions/RoomEquipments'
 
   RoomEquipments:
     description: "Equipements of a room (telephone, video projector...)"
