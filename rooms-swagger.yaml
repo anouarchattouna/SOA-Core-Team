@@ -32,8 +32,8 @@ info:
     ### Changelog
     * v1.0.0: initial proposal
 
-host: apps.mybuilding.socgen.com
-basePath: /rooms/api/v1
+host: h-apps.socgen.com
+basePath: /mybuilding/api/hermes/v1
 schemes:
   - https
 consumes:
@@ -74,7 +74,7 @@ paths:
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "LesDunes-A")
+          description: Building name for which the rooms are searched (e.g. "Les Dunes - A")
           required: true
           type: string
         - name: floor
@@ -255,7 +255,7 @@ definitions:
           The client may also use this URL as an id of the image and load the actual image from its local storage.
           Another option for the client is to NOT use this attribute but to use the room type attribute to choose 
           the actual image to diplay (the actual image is then loaded from the client's local storage).
-
+          
   RoomEquipments:
     description: "Equipements of a room (telephone, video projector...)"
     type: object
@@ -278,7 +278,7 @@ definitions:
       smartScreen:
         type: boolean
         description: Optional. Should be considered as false if not present or null.
-      touchcreen:
+      touchScreen:
         type: boolean
         description: Optional. Should be considered as false if not present or null.
       others:
