@@ -83,7 +83,7 @@ paths:
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "LesDunes-A")
+          description: Building name for which the rooms are searched (e.g. "Les Dunes - A")
           required: true
           type: string
         - name: floor
@@ -313,22 +313,6 @@ definitions:
         description: Max number of people in the room        
       equipments:
           $ref: '#/definitions/RoomEquipments'
-      thumbnailAsBase64:
-        type: string
-        description: |
-          Thumbnail of the room encoded using Base64. Optional, but may be provided for performance reason 
-          (to avoid hundreds of unitary thumbnails downloads). 
-          If not null, the thumbnail must be displayed using the image contained in the thumbnailAsBase64 attribute.
-          If null, the thumbnail must be loaded using the thumbnailUrl attribute.
-      thumbnailUrl:
-        type: string
-        description: |
-          URL of the thumbnail of the room. Optional. For performance reason, should be used only if 
-          the thumbnailAsBase64 attribute is not present or is null.
-      imageUrl:
-        type: string
-        description: |
-          URL of the image/visual of the room (image displayed after a room is selected by the user).
 
   RoomEquipments:
     description: "Equipements of a room (telephone, video projector...)"
@@ -352,7 +336,7 @@ definitions:
       smartScreen:
         type: boolean
         description: Optional. Should be considered as false if not present or null.
-      touchcreen:
+      touchScreen:
         type: boolean
         description: Optional. Should be considered as false if not present or null.
       others:
