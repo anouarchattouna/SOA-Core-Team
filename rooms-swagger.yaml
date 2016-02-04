@@ -21,15 +21,6 @@ info:
     For example, **each response contains either a data or an error as the top level object**. The **meta attribute provided 
     in each response is optional** and is reserved for future use to ease the parsing of response data.
 
-    ### About the identification of a booking
-    The WS Rooms is a proxy of an existing GTS Booking Service. **Currently, the GTS Booking Service does NOT handle 
-    a booking identifier**. So currently, a booking is identified using the tuple (roomId, startDateTime, endDatetime).
-    It is expected than a new version of the GTS Booking Service will handle a standard booking identfier.
-    
-    So in the spec of the Rooms API, **we sometimes provide 2 operations (for the same functional action)**, 
-    one with a standard booking identifier (to prepare the futur) and one with an identifier of the form 
-    (roomId, startDateTime, endDatetime) to be compliant with the current GTS Booking Service.
-
     ### Security
     This API is secure using the in house **GAIA** solution.
 
@@ -160,70 +151,7 @@ paths:
             $ref: '#/definitions/Booking'
       responses:
         "201":
-          description: "Success. If bookingId is handled/available, returns the URL of the booking in the location header."
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-    put:
-      description: |
-        Updates a booking, using the booking identifier of the form (roomId, startEndtime, endDatetime) 
-      parameters:
-        - name: roomId
-          in: query
-          description: Room for which to update the booking
-          required: true
-          type: string
-        - name: startDatetime
-          in: query
-          description: |
-            Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to update
-            (startDatetime of the old meeting , NOT the startDatetime of the new meeting, but can be the same if unmodified)
-          required: true
-          type: string
-        - name: endDatetime
-          in: query
-          description: |
-            End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to update
-            (endDatetime of the old meeting , NOT the endDatetime of the new meeting, but can be the same if unmodified)
-          required: true
-          type: string        
-        - name: body
-          in: body
-          description: New booking data
-          required: true
-          schema:
-            $ref: '#/definitions/Booking'
-      responses:
-        "200":
-          description: Success
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-    delete:
-      description: "Deletes a booking for a room, using a booking identifier of the form (roomId, startDatetime, endDatetime)"
-      parameters:
-        - name: roomId
-          in: query
-          description: Room for which to delete the booking
-          required: true
-          type: string
-        - name: startDatetime
-          in: query
-          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to delete"
-          required: true
-          type: string
-        - name: endDatetime
-          in: query
-          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to delete" 
-          required: true
-          type: string
-      responses:
-        "204":
-          description: Success (204=No Content)
+          description: "Success. Returns the URL of the booking in the location header."
         default:
           description: Unexpected error
           schema:
@@ -234,9 +162,7 @@ paths:
     parameters:
       - $ref: '#/parameters/bookingId'
     get:
-      description: |
-        Returns a booking, using a standard booking identifier 
-        (such identifier is **currently NOT available**)
+      description: Returns a booking
       responses:
         "200":
           description: Success. Returns a booking.
@@ -255,9 +181,7 @@ paths:
             $ref: '#/definitions/Error'
 
     put:
-      description: |
-        Updates a booking, using a standard booking identifier 
-        (such identifier is **currently NOT available**)
+      description: Updates a booking
       parameters:
         - name: body
           in: body
@@ -274,9 +198,7 @@ paths:
             $ref: '#/definitions/Error'
 
     delete:
-      description: |
-        Deletes a booking for a room, using a standard booking identifier 
-        (such identifier is **currently NOT available**)
+      description: Deletes a booking for a room
       responses:
         "204":
           description: Success (204=No Content)
@@ -297,6 +219,10 @@ definitions:
         type: string
         description: |
           Id of the room. Must NOT be displayed to the end-user. Must NOT be parsed (must remain an opaque value).  
+      type:
+        type: string
+        description: |
+          Type of the room (the exact enumerated values are not yet known)
       shortName:
         type: string
         description: |
@@ -313,22 +239,22 @@ definitions:
         description: Max number of people in the room        
       equipments:
           $ref: '#/definitions/RoomEquipments'
-      thumbnailAsBase64:
-        type: string
-        description: |
-          Thumbnail of the room encoded using Base64. Optional, but may be provided for performance reason 
-          (to avoid hundreds of unitary thumbnails downloads). 
-          If not null, the thumbnail must be displayed using the image contained in the thumbnailAsBase64 attribute.
-          If null, the thumbnail must be loaded using the thumbnailUrl attribute.
       thumbnailUrl:
         type: string
         description: |
-          URL of the thumbnail of the room. Optional. For performance reason, should be used only if 
-          the thumbnailAsBase64 attribute is not present or is null.
+          URL of the thumbnail of the room. Optional.
+          For performance reason, the thumbnail should be loaded maximum once per day and cached on the client side.
+          The client may also use this URL as an id of the thumbnail and load the actual thumbnail from its local storage.
+          Another option for the client is to NOT use this attribute but to use the room type attribute to choose 
+          the actual thumbnail to diplay (the actual thumbnail is then loaded from the client's local storage).
       imageUrl:
         type: string
         description: |
-          URL of the image/visual of the room (image displayed after a room is selected by the user).
+          URL of the image/visual of the room (large image displayed after a room is selected by the user). Optional.
+          For performance reason, the image should be loaded maximum once per day and cached on the client side.
+          The client may also use this URL as an id of the image and load the actual image from its local storage.
+          Another option for the client is to NOT use this attribute but to use the room type attribute to choose 
+          the actual image to diplay (the actual image is then loaded from the client's local storage).
 
   RoomEquipments:
     description: "Equipements of a room (telephone, video projector...)"
@@ -367,9 +293,7 @@ definitions:
     properties:
       bookingId:
         type: string
-        description: |
-          Id of the booking. 
-          If is null, use (roomId, startDatetime, endDatetime) to identify a booking.
+        description: Id of the booking. 
       roomId:
         type: string
         description: Id of the booked room or room to book
