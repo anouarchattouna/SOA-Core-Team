@@ -166,77 +166,12 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-    put:
-      description: |
-        Updates a booking, using the booking identifier of the form (roomId, startEndtime, endDatetime) 
-      parameters:
-        - name: roomId
-          in: query
-          description: Room for which to update the booking
-          required: true
-          type: string
-        - name: startDatetime
-          in: query
-          description: |
-            Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to update
-            (startDatetime of the old meeting , NOT the startDatetime of the new meeting, but can be the same if unmodified)
-          required: true
-          type: string
-        - name: endDatetime
-          in: query
-          description: |
-            End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to update
-            (endDatetime of the old meeting , NOT the endDatetime of the new meeting, but can be the same if unmodified)
-          required: true
-          type: string        
-        - name: body
-          in: body
-          description: New booking data
-          required: true
-          schema:
-            $ref: '#/definitions/Booking'
-      responses:
-        "200":
-          description: Success
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-    delete:
-      description: "Deletes a booking for a room, using a booking identifier of the form (roomId, startDatetime, endDatetime)"
-      parameters:
-        - name: roomId
-          in: query
-          description: Room for which to delete the booking
-          required: true
-          type: string
-        - name: startDatetime
-          in: query
-          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to delete"
-          required: true
-          type: string
-        - name: endDatetime
-          in: query
-          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking to delete" 
-          required: true
-          type: string
-      responses:
-        "204":
-          description: Success (204=No Content)
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
 ## Path bookings/{bookingId} ########################################################
   /bookings/{bookingId}:
     parameters:
       - $ref: '#/parameters/bookingId'
     get:
-      description: |
-        Returns a booking, using a standard booking identifier 
-        (such identifier is **currently NOT available**)
+      description: Returns a booking, using a standard booking identifier
       responses:
         "200":
           description: Success. Returns a booking.
@@ -255,9 +190,7 @@ paths:
             $ref: '#/definitions/Error'
 
     put:
-      description: |
-        Updates a booking, using a standard booking identifier 
-        (such identifier is **currently NOT available**)
+      description: Updates a booking, using a standard booking identifier 
       parameters:
         - name: body
           in: body
@@ -274,9 +207,7 @@ paths:
             $ref: '#/definitions/Error'
 
     delete:
-      description: |
-        Deletes a booking for a room, using a standard booking identifier 
-        (such identifier is **currently NOT available**)
+      description: Deletes a booking for a room, using a standard booking identifier
       responses:
         "204":
           description: Success (204=No Content)
