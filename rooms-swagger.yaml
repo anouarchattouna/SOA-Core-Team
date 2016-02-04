@@ -18,7 +18,8 @@ info:
     in **Val de Fontenay**.
 
     The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
-    For example, each response contains either a data or an error as the top level object. 
+    For example, **each response contains either a data or an error as the top level object**. The **meta attribute provided 
+    in each response is optional** and is reserved for future use to ease the parsing of response data.
 
     ### About the identification of a booking
     The WS Rooms is a proxy of an existing GTS Booking Service. **Currently, the GTS Booking Service does NOT handle 
@@ -38,7 +39,6 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
-    * v1.0.1: tbd
     * v1.0.0: initial proposal
 
 host: apps.mybuilding.socgen.com
@@ -88,7 +88,7 @@ paths:
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "A11")
+          description: Floor name for which the rooms are searched (e.g. "A11"). Optional.
           required: false
           type: string
       responses:
@@ -295,10 +295,16 @@ definitions:
     properties:
       id:
         type: string
-        description: Id of the room
-      name:
+        description: |
+          Id of the room. Must NOT be displayed to the end-user. Must NOT be parsed (must remain an opaque value).  
+      shortName:
         type: string
-        description: Name of the room (e.g. "C11")
+        description: |
+          Short name of the room (e.g. "C11-212"). Optional. If not present or null, use longName.
+      longName:
+        type: string
+        description: |
+          Long name of the room (e.g. "Room-Par-Def-Tours-Sg-C11212-10P-Priv") 
       isPublic:
         type: boolean
         description: Is the room public (vs private) ?
@@ -309,7 +315,20 @@ definitions:
           $ref: '#/definitions/RoomEquipments'
       thumbnailAsBase64:
         type: string
-        description: Thumbnail of the room encoded using Base64
+        description: |
+          Thumbnail of the room encoded using Base64. Optional, but may be provided for performance reason 
+          (to avoid hundreds of unitary thumbnails downloads). 
+          If not null, the thumbnail must be displayed using the image contained in the thumbnailAsBase64 attribute.
+          If null, the thumbnail must be loaded using the thumbnailUrl attribute.
+      thumbnailUrl:
+        type: string
+        description: |
+          URL of the thumbnail of the room. Optional. For performance reason, should be used only if 
+          the thumbnailAsBase64 attribute is not present or is null.
+      imageUrl:
+        type: string
+        description: |
+          URL of the image/visual of the room (image displayed after a room is selected by the user).
 
   RoomEquipments:
     description: "Equipements of a room (telephone, video projector...)"
@@ -317,21 +336,30 @@ definitions:
     properties:
       telephone:
         type: boolean
+        description: Optional. Should be considered as false if not present or null.
       audioConf:
         type: boolean
+        description: Optional. Should be considered as false if not present or null.
       videoConf:
         type: boolean
+        description: Optional. Should be considered as false if not present or null.
       videoProjector:
         type: boolean        
+        description: Optional. Should be considered as false if not present or null.
       television:
         type: boolean
+        description: Optional. Should be considered as false if not present or null.
       smartScreen:
         type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      touchcreen:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
       others:
         type: array
         items:
           type: string
-        description: Other equipments (non standard equipements)
+        description: Other equipments (non standard equipements). Optional. Should be considered as empty if not present or null.
 
   Booking:
     description: "Booking/schedule of a room for a meeting"
