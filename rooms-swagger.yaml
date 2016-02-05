@@ -85,7 +85,7 @@ paths:
               data:
                 type: array
                 items:
-                  type: string
+                  $ref: '#/definitions/Building'
         default:
           description: Unexpected error
           schema:
@@ -246,6 +246,15 @@ paths:
 #                                 Definitions                                  #
 ################################################################################
 definitions:
+  Building:
+    description: Room data
+    type: object
+    properties:
+      name: 
+        type: string
+        description: |
+          Name of the building
+        
   Room:
     description: Room data
     type: object
