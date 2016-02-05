@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.0"
+  version: "1.0.1"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
