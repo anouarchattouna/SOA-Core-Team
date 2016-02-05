@@ -35,6 +35,10 @@ info:
 
 host: h-apps.socgen.com
 basePath: /mybuilding/api/hermes/v1
+tags:
+  - name: Rooms
+  - name: Buildings
+  - name: Bookings
 schemes:
   - https
 consumes:
@@ -61,6 +65,8 @@ paths:
 ## Path /buildings ########################################################
   /buildings:
     get:
+      tags:
+        - Buildings
       description: Returns the buildings of a site
       parameters:
         - name: country
@@ -96,6 +102,8 @@ paths:
 ## Path /rooms ########################################################
   /rooms:
     get:
+      tags:
+        - Rooms
       description: Returns the rooms of a building
       parameters:
         - name: country
@@ -140,6 +148,8 @@ paths:
 ## Path /bookings ########################################################
   /bookings:
     get:
+      tags:
+        - Bookings
       description: Returns the bookings of a room
       parameters:
         - name: room
@@ -177,6 +187,8 @@ paths:
             $ref: '#/definitions/Error'
 
     post:
+      tags:
+        - Bookings
       description: Creates a booking for a room
       parameters:
         - name: body
@@ -198,6 +210,8 @@ paths:
     parameters:
       - $ref: '#/parameters/bookingId'
     get:
+      tags:
+        - Bookings
       description: Returns a booking
       responses:
         "200":
@@ -217,6 +231,8 @@ paths:
             $ref: '#/definitions/Error'
 
     put:
+      tags:
+        - Bookings
       description: Updates a booking
       parameters:
         - name: body
@@ -234,6 +250,8 @@ paths:
             $ref: '#/definitions/Error'
 
     delete:
+      tags:
+        - Bookings
       description: Deletes a booking for a room
       responses:
         "204":
