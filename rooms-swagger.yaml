@@ -30,6 +30,7 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.1: use objects instead of strings for buildings
     * v1.0.0: initial proposal
 
 host: h-apps.socgen.com
@@ -247,14 +248,25 @@ paths:
 ################################################################################
 definitions:
   Building:
-    description: Room data
+    description: Building data
     type: object
     properties:
-      name: 
+      name:
         type: string
-        description: |
-          Name of the building
-        
+        description: Name of the building
+      floors:
+        type: array
+        items:
+          $ref: '#/definitions/Floor'
+          
+  Floor:
+    description: Floor data
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the floor
+
   Room:
     description: Room data
     type: object
