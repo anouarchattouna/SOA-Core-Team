@@ -57,6 +57,41 @@ parameters:
 ################################################################################
 paths:
 
+## Path /buildings ########################################################
+  /buildings:
+    get:
+      description: Returns the buildings of a site
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the building (e.g. "FR")
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay")
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of buildings.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
 ## Path /rooms ########################################################
   /rooms:
     get:
