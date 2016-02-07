@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.1"
+  version: "1.0.2"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -30,6 +30,7 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.2: add of /bookings/mybookings, /rooms/availability, /participants/availability
     * v1.0.1: use objects instead of strings for buildings
     * v1.0.0: initial proposal
 
@@ -140,6 +141,55 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Room'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /rooms/availability #################################################
+  /rooms/availability:
+    get:
+      tags:
+        - Rooms
+      description: Returns the availability of a list of rooms for a timeslot
+      parameters:
+        - name: rooms
+          in: query
+          description: Comma separated list of the roomIds to check for availability
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the timeslot to check for availability"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)  of the timeslot to check for availability" 
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns an array with the availability of the rooms.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    room:
+                      type: string
+                      description: RoomId
+                    available:
+                      type: boolean
+                      description: true if the room is available for the timeslot
+
         default:
           description: Unexpected error
           schema:
@@ -261,6 +311,91 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+## Path /bookings/mybookings #################################################
+  /bookings/mybookings:
+    get:
+      tags:
+        - Bookings
+      description: Returns the bookings of the authenticated user
+      parameters:
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search" 
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of bookings for the authenticated user.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Booking'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /participants/availability #################################################
+  /participants/availability:
+    get:
+      tags:
+        - Participants
+      description: Returns the availability of the participants for a timeslot
+      parameters:
+        - name: participants
+          in: query
+          description: Comma separated list of the participants of the meeting (emails of the participants)
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the timeslot to check for availability"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)  of the timeslot to check for availability" 
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns an array with the availability of the participants.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    participant:
+                      type: string
+                      description: Participant (email)
+                    available:
+                      type: boolean
+                      description: true if the participant is available for the timeslot
+
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
 ################################################################################
 #                                 Definitions                                  #
 ################################################################################
@@ -276,7 +411,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Floor'
-          
+
   Floor:
     description: Floor data
     type: object
