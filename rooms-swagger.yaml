@@ -73,7 +73,7 @@ paths:
       tags:
         - Buildings
       description: |
-        Returns a building given its name (the returned Building object contains Areas objects which Floors objects). 
+        Returns a building given its name (the returned Building object contains Areas objects which contain Floors objects). 
         Does NOT return Rooms objects. Call /rooms to get Rooms.
       parameters:
         - name: country
