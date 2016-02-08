@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.5"
+  version: "1.0.6"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -30,6 +30,9 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.6
+      * In /buildings, the building parameter is now optional (to allow the search of all the buildings of a site)
+      * The Floor object now contains the roomIds of the floor (to allow to link a room to a floor, then to an area, then to a building...). 
     * v1.0.5: split of the /rooms/availability in 2 operations
     * v1.0.4: add of new optional parameters to /rooms/availability (to search available rooms for a building for example)
     * v1.0.3: add of the Area concept (a Building is composed of Areas which are composed of Floors). The GET rooms now takes the optional parameter area.
@@ -75,7 +78,7 @@ paths:
       tags:
         - Buildings
       description: |
-        Returns a building given its name (the returned Building object contains Areas objects which contain Floors objects). 
+        Returns a list of buildings, with only 1 building if the building name is provided, but with  all the buildings of the site if the buiding name is missing.
         Does NOT return Rooms objects. Call /rooms to get Rooms.
       parameters:
         - name: country
@@ -90,12 +93,12 @@ paths:
           type: string
         - name: building
           in: query
-          description: Building name (e.g. "Les Dunes")
-          required: true
+          description: Building name (e.g. "Les Dunes"). Optional.
+          required: false
           type: string
       responses:
         "200":
-          description: Success. Returns the building data.
+          description: Success. Returns a list of buildings.
           schema:
             type: object
             properties:
@@ -104,7 +107,9 @@ paths:
                   code:
                     type: string
               data:
-                $ref: '#/definitions/Building'
+                type: array
+                items:
+                  $ref: '#/definitions/Building'
         default:
           description: Unexpected error
           schema:
@@ -513,6 +518,10 @@ definitions:
       name:
         type: string
         description: Name of the floor
+      roomIds:
+        type: array
+        items:
+          type: string
 
   Room:
     description: Room data
