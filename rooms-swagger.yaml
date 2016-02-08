@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.2"
+  version: "1.0.3"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -30,6 +30,7 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.3: add of the Area concept (a Building is composed of Areas which are composed of Floors). The GET rooms now takes the optional parameter area.
     * v1.0.2: add of /bookings/mybookings, /rooms/availability, /participants/availability
     * v1.0.1: use objects instead of strings for buildings
     * v1.0.0: initial proposal
@@ -47,6 +48,7 @@ consumes:
 produces:
   - application/json
 
+
 ################################################################################
 #                                           Parameters                         #
 ################################################################################
@@ -58,54 +60,21 @@ parameters:
     type: string
     required: true
 
+
 ################################################################################
 #                                           Paths                              #
 ################################################################################
 paths:
+
 
 ## Path /buildings ########################################################
   /buildings:
     get:
       tags:
         - Buildings
-      description: Returns the buildings of a site
-      parameters:
-        - name: country
-          in: query
-          description: Country code of the building (e.g. "FR")
-          required: true
-          type: string
-        - name: site
-          in: query
-          description: Site name of the building (e.g. "Val de Fontenay")
-          required: true
-          type: string
-      responses:
-        "200":
-          description: Success. Returns a list of buildings.
-          schema:
-            type: object
-            properties:
-              meta:
-                  properties:
-                    code:
-                      type: string
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Building'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-
-## Path /rooms ########################################################
-  /rooms:
-    get:
-      tags:
-        - Rooms
-      description: Returns the rooms of a building
+      description: |
+        Returns a building given its name (the returned Building object contains Areas objects which Floors objects). 
+        Does NOT return Rooms objects. Call /rooms to get Rooms.
       parameters:
         - name: country
           in: query
@@ -119,12 +88,57 @@ paths:
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "Les Dunes - A")
+          description: Building name (e.g. "Les Dunes")
           required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns the building data.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Building'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+## Path /rooms ########################################################
+  /rooms:
+    get:
+      tags:
+        - Rooms
+      description: Returns the rooms of a building (the search can be limited to a specif area and floor)
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the building (e.g. "FR")
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay")
+          required: true
+          type: string
+        - name: building
+          in: query
+          description: Building name for which the rooms are searched (e.g. "Les Dunes")
+          required: true
+          type: string
+        - name: area
+          in: query
+          description: Area name for which the rooms are searched (e.g. "Les Dunes - A"). Optional.
+          required: false
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "A11"). Optional.
+          description: Floor name for which the rooms are searched (e.g. "A11"). Optional. but if provided, the area must also be provided.
           required: false
           type: string
       responses:
@@ -134,9 +148,9 @@ paths:
             type: object
             properties:
               meta:
-                  properties:
-                    code:
-                      type: string
+                properties:
+                  code:
+                    type: string
               data:
                 type: array
                 items:
@@ -145,6 +159,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+
 
 ## Path /rooms/availability #################################################
   /rooms/availability:
@@ -175,9 +190,9 @@ paths:
             type: object
             properties:
               meta:
-                  properties:
-                    code:
-                      type: string
+                properties:
+                  code:
+                    type: string
               data:
                 type: array
                 items:
@@ -186,6 +201,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+
 
 ## Path /bookings ########################################################
   /bookings:
@@ -216,9 +232,9 @@ paths:
             type: object
             properties:
               meta:
-                  properties:
-                    code:
-                      type: string
+                properties:
+                  code:
+                    type: string
               data:
                 type: array
                 items:
@@ -247,6 +263,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
 ## Path bookings/{bookingId} ########################################################
   /bookings/{bookingId}:
     parameters:
@@ -262,9 +279,9 @@ paths:
             type: object
             properties:
               meta:
-                  properties:
-                    code:
-                      type: string
+                properties:
+                  code:
+                    type: string
               data:
                 $ref: '#/definitions/Booking'
         default:
@@ -303,6 +320,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
 ## Path /bookings/mybookings #################################################
   /bookings/mybookings:
     get:
@@ -327,9 +345,9 @@ paths:
             type: object
             properties:
               meta:
-                  properties:
-                    code:
-                      type: string
+                properties:
+                  code:
+                    type: string
               data:
                 type: array
                 items:
@@ -338,6 +356,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+
 
 ## Path /participants/availability #################################################
   /participants/availability:
@@ -368,9 +387,9 @@ paths:
             type: object
             properties:
               meta:
-                  properties:
-                    code:
-                      type: string
+                properties:
+                  code:
+                    type: string
               data:
                 type: array
                 items:
@@ -381,17 +400,37 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
 ################################################################################
 #                                 Definitions                                  #
 ################################################################################
 definitions:
   Building:
-    description: Building data
+    description: |
+      Building data.
+      A building can be a physical building or logical group a building/areas.
+      For example, "Tours Sg" is a building and "Alicante" and "Chassagne" are areas.
+      Another example is "Basalte" which is a building with a single area.
     type: object
     properties:
       name:
         type: string
         description: Name of the building
+      floors:
+        type: array
+        items:
+          $ref: '#/definitions/Area'
+
+  Area:
+    description: |
+      Area data (an area is a particular area/zone of a building; sometimes there is only 1 area in a building).
+      For example, "Tours Sg" is a building and "Alicante" and "Chassagne" are areas.
+      Another example is "Basalte" which is a building with a single area.
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the area
       floors:
         type: array
         items:
