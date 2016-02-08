@@ -181,15 +181,7 @@ paths:
               data:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    room:
-                      type: string
-                      description: RoomId
-                    available:
-                      type: boolean
-                      description: true if the room is available for the timeslot
-
+                  $ref: '#/definitions/RoomAvailability'
         default:
           description: Unexpected error
           schema:
@@ -382,14 +374,7 @@ paths:
               data:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    participant:
-                      type: string
-                      description: Participant (email)
-                    available:
-                      type: boolean
-                      description: true if the participant is available for the timeslot
+                  $ref: '#/definitions/ParticipantAvailability'
 
         default:
           description: Unexpected error
@@ -524,6 +509,28 @@ definitions:
       optionalParticipants:
         type: string
         description: Comma separated list of optional participants of the meeting (emails of the participants)
+
+  RoomAvailability:
+    description: Indication of the availability a room
+    type: object
+    properties:
+      room:
+        type: string
+        description: RoomId
+      available:
+        type: boolean
+        description: true if the room is available
+
+  ParticipantAvailability:
+    description: Indication of the availability a participant of a meeting
+    type: object
+    properties:
+      participant:
+        type: string
+        description: Participant (email)
+      available:
+        type: boolean
+        description: true if the participant is available
 
   Error:
     description: Error object with a code and a message
