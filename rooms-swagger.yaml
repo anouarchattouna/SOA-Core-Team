@@ -504,11 +504,15 @@ definitions:
         type: string
         description: Object/Title of the meeting
       mandatoryParticipants:
-        type: string
-        description: Comma separated list of mandatory participants of the meeting (emails of the participants)
+        type: array
+        items:
+          type: string
+        description: List of the mandatory participants of the meeting (emails of the participants)
       optionalParticipants:
-        type: string
-        description: Comma separated list of optional participants of the meeting (emails of the participants)
+        type: array
+        items:
+          type: string
+        description: List of the optional participants of the meeting (emails of the participants)
 
   RoomAvailability:
     description: Indication of the availability a room
@@ -519,7 +523,7 @@ definitions:
         description: RoomId
       available:
         type: boolean
-        description: true if the room is available
+        description: true if the room is available for the timeslot
 
   ParticipantAvailability:
     description: Indication of the availability a participant of a meeting
@@ -530,7 +534,7 @@ definitions:
         description: Participant (email)
       available:
         type: boolean
-        description: true if the participant is available
+        description: true if the participant is available for the timeslot
 
   Error:
     description: Error object with a code and a message
