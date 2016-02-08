@@ -416,7 +416,7 @@ definitions:
       name:
         type: string
         description: Name of the building
-      floors:
+      areas:
         type: array
         items:
           $ref: '#/definitions/Area'
