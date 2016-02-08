@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.4"
+  version: "1.0.5"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -30,6 +30,7 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.5: split of the /rooms/availability in 2 operations
     * v1.0.4: add of new optional parameters to /rooms/availability (to search available rooms for a building for example)
     * v1.0.3: add of the Area concept (a Building is composed of Areas which are composed of Floors). The GET rooms now takes the optional parameter area.
     * v1.0.2: add of /bookings/mybookings, /rooms/availability, /participants/availability
@@ -163,35 +164,74 @@ paths:
 
 
 ## Path /rooms/availability #################################################
-  /rooms/availability:
+  /rooms/availability?rooms=...:
     get:
       tags:
         - Rooms
       description: |
         Returns the availability of rooms for a timeslot.
         The list of the rooms to check for availability can be defined using 2 ways:
-        * via a comma separated lists of roomIds
-        * via the tuple (country, site, building [, area, floor])
+        * via a comma separated lists of roomIds (see /rooms/availability?rooms=...)
+        * via the tuple (country, site, building [, area, floor]) (see /rooms/availability?country=...&site=...&building=...[&area=...&floor=...])
       parameters:
         - name: rooms
           in: query
-          description: Comma separated list of the roomIds to check for availability. Optional. But must be provided if the building parameter is missing.
-          required: false
+          description: Comma separated list of the roomIds to check for availability.
+          required: true
           type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the timeslot to check for availability"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)  of the timeslot to check for availability" 
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns an array with the availability of the rooms.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/RoomAvailability'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /rooms/availability?country=...&site=...&building=...[&area=...&floor=...]:
+    get:
+      tags:
+        - Rooms
+      description: |
+        Returns the availability of rooms for a timeslot.
+        The list of the rooms to check for availability can be defined using 2 ways:
+        * via a comma separated lists of roomIds (see /rooms/availability?rooms=...)
+        * via the tuple (country, site, building [, area, floor]) (see /rooms/availability?country=...&site=...&building=...[&area=...&floor=...])
+      parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR"). Optional. But must be provided if the building parameter is provided.
-          required: false
+          description: Country code of the building (e.g. "FR").
+          required: true
           type: string
         - name: site
           in: query
-          description: Site name of the building (e.g. "Val de Fontenay"). Optional. But must be provided if the building parameter is provided.
-          required: false
+          description: Site name of the building (e.g. "Val de Fontenay").
+          required: true
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "Les Dunes"). Optional. But must be provided if the rooms parameter is missing.
-          required: false
+          description: Building name for which the rooms are searched (e.g. "Les Dunes").
+          required: true
           type: string
         - name: area
           in: query
