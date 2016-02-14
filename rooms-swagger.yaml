@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.6"
+  version: "1.0.7"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -30,6 +30,16 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.7
+      * For /buildings path, the site parameter is now optional
+      * For /rooms path, the site parameter is now optional
+      * For /rooms path, removal of the area parameter
+      * For /rooms/availability, removal of the area parameter
+      * Removal of the Area definition
+      * In the Building definition, add of site and country properties
+      * In the Room definition, rename of the longName propery by fullName
+      * In the Room definition, rename of the shortName propery by name
+      * In the Room definition, add of the office property
     * v1.0.6
       * In /buildings, the building parameter is now optional (to allow the search of all the buildings of a site)
       * The Floor object now contains the roomIds of the floor (to allow to link a room to a floor, then to an area, then to a building...). 
@@ -78,7 +88,7 @@ paths:
       tags:
         - Buildings
       description: |
-        Returns a list of buildings, with only 1 building if the building name is provided, but with  all the buildings of the site if the buiding name is missing.
+        Returns a list of buildings, with only 1 building if the building name is provided, but with  all the buildings of the site (or of the country if the site parameter is missing) if the buiding name is missing.
         Does NOT return Rooms objects. Call /rooms to get Rooms.
       parameters:
         - name: country
@@ -88,12 +98,12 @@ paths:
           type: string
         - name: site
           in: query
-          description: Site name of the building (e.g. "Val de Fontenay")
-          required: true
+          description: Site name of the building (e.g. "Val de Fontenay"). Optional.
+          required: false
           type: string
         - name: building
           in: query
-          description: Building name (e.g. "Les Dunes"). Optional.
+          description: Building name (e.g. "Les Dunes - A"). Optional.
           required: false
           type: string
       responses:
@@ -121,7 +131,7 @@ paths:
     get:
       tags:
         - Rooms
-      description: Returns the rooms of a building (the search can be limited to a specif area and floor)
+      description: Returns the rooms of a building (the search can be limited to a specif floor)
       parameters:
         - name: country
           in: query
@@ -130,22 +140,17 @@ paths:
           type: string
         - name: site
           in: query
-          description: Site name of the building (e.g. "Val de Fontenay")
-          required: true
+          description: Site name of the building (e.g. "Val de Fontenay"). Optional.
+          required: false
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "Les Dunes")
-          required: true
-          type: string
-        - name: area
-          in: query
-          description: Area name for which the rooms are searched (e.g. "Les Dunes - A"). Optional.
+          description: Building name for which the rooms are searched (e.g. "Les Dunes - A"). Optional.
           required: false
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "A11"). Optional. But if provided, the area parameter must also be provided.
+          description: Floor name for which the rooms are searched (e.g. "A11"). Optional. But if provided, the building  parameter must also be provided.
           required: false
           type: string
       responses:
@@ -177,7 +182,7 @@ paths:
         Returns the availability of rooms for a timeslot.
         The list of the rooms to check for availability can be defined using 2 ways:
         * via a comma separated lists of roomIds (see /rooms/availability?rooms=...)
-        * via the tuple (country, site, building [, area, floor]) (see /rooms/availability?country=...&site=...&building=...[&area=...&floor=...])
+        * via the tuple (country, site, [building, floor]) (see /rooms/availability?country=...&site=...[&building=...&floor=...])
       parameters:
         - name: rooms
           in: query
@@ -213,7 +218,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-  /rooms/availability?country=...&site=...&building=...[&area=...&floor=...]:
+  /rooms/availability?country=...&site=...[&building=...&floor=...]:
     get:
       tags:
         - Rooms
@@ -221,7 +226,7 @@ paths:
         Returns the availability of rooms for a timeslot.
         The list of the rooms to check for availability can be defined using 2 ways:
         * via a comma separated lists of roomIds (see /rooms/availability?rooms=...)
-        * via the tuple (country, site, building [, area, floor]) (see /rooms/availability?country=...&site=...&building=...[&area=...&floor=...])
+        * via the tuple (country, site, [building, floor]) (see /rooms/availability?country=...&site=...[&building=...&floor=...])
       parameters:
         - name: country
           in: query
@@ -235,17 +240,12 @@ paths:
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "Les Dunes").
-          required: true
-          type: string
-        - name: area
-          in: query
-          description: Area name for which the rooms are searched (e.g. "Les Dunes - A"). Optional.
+          description: Building name for which the rooms are searched (e.g. "Les Dunes - A"). Optional.
           required: false
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "A11"). Optional. But if provided, the area must also be provided.
+          description: Floor name for which the rooms are searched (e.g. "A11"). Optional. 
           required: false
           type: string
         - name: startDatetime
@@ -481,31 +481,18 @@ paths:
 ################################################################################
 definitions:
   Building:
-    description: |
-      Building data.
-      A building can be a physical building or logical group a building/areas.
-      For example, "Tours Sg" is a building and "Alicante" and "Chassagne" are areas.
-      Another example is "Basalte" which is a building with a single area.
+    description: Building data.
     type: object
     properties:
       name:
         type: string
         description: Name of the building
-      areas:
-        type: array
-        items:
-          $ref: '#/definitions/Area'
-
-  Area:
-    description: |
-      Area data (an area is a particular area/zone of a building; sometimes there is only 1 area in a building).
-      For example, "Tours Sg" is a building and "Alicante" and "Chassagne" are areas.
-      Another example is "Basalte" which is a building with a single area.
-    type: object
-    properties:
-      name:
+      site:
         type: string
-        description: Name of the area
+        description: Name of the site of the building
+      country:
+        type: string
+        description: Country code of the building
       floors:
         type: array
         items:
@@ -535,14 +522,19 @@ definitions:
         type: string
         description: |
           Type of the room (the exact enumerated values are not yet known)
-      shortName:
+      fullName:
         type: string
         description: |
-          Short name of the room (e.g. "C11-212"). Optional. If not present or null, use longName.
-      longName:
+          Full name of the room (e.g. "Room-Par-Def-Tours-Sg-C11212-10P-Priv") 
+      name:
         type: string
         description: |
-          Long name of the room (e.g. "Room-Par-Def-Tours-Sg-C11212-10P-Priv") 
+          Display name of the room (e.g. "Tours-Sg-C11212-10P-Priv").
+      office:
+        type: string
+        description: |
+          Office name of the room, in fact its usual name, very short (e.g. "C11212"). 
+          An alternate id of a room, is the couple (building, office).
       isPublic:
         type: boolean
         description: Is the room public (vs private) ?
