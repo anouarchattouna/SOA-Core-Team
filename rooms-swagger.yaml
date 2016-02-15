@@ -51,7 +51,7 @@ info:
     * v1.0.0: initial proposal
 
 host: h-apps.socgen.com
-basePath: /mybuilding/api/hermes/v1
+basePath: /mybuilding/rooms/api/v1
 tags:
   - name: Rooms
   - name: Buildings
