@@ -32,7 +32,7 @@ info:
     ### Changelog
     * v1.0.7
       * For /buildings path, the site parameter is now optional
-      * For /rooms path, the site parameter is now optional
+      * For /rooms path, the building parameter is now optional
       * For /rooms path, removal of the area parameter
       * For /rooms/availability, removal of the area parameter
       * Removal of the Area definition
