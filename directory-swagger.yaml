@@ -31,6 +31,8 @@ info:
 
 host: h-apps.socgen.com
 basePath: /mybuilding/directory/api/v1
+tags:
+  - name: People
 schemes:
   - https
 consumes:
@@ -46,6 +48,8 @@ paths:
 ## Path /people ########################################################
   /people:
     get:
+      tags:
+        - People
       description: Returns the people matching the query
       parameters:
         - name: query
