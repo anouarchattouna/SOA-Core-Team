@@ -5,9 +5,9 @@ swagger: "2.0"
 ################################################################################
 info:
   version: "1.0.0"
-  title: Directory REST API for Connected Building
+  title: People directory REST API for Connected Building
   description: |
-    This is the REST API to search for people, departments, agencies, subsidiaries and themes.
+    This is the REST API to search for people in the SG Directory.
 
     You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/). 
 
@@ -29,8 +29,8 @@ info:
     ### Changelog
     * v1.0.0: initial proposal
 
-host: apps.mybuilding.socgen.com
-basePath: /directory/api/v1
+host: h-apps.socgen.com
+basePath: /mybuilding/directory/api/v1
 schemes:
   - https
 consumes:
@@ -77,162 +77,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Person'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-## Path /departments ########################################################
-  /departments:
-    get:
-      description: Returns the people matching the query
-      parameters:
-        - name: query
-          in: query
-          description: Terms used for the fuzzy phonetic full text search
-          required: true
-          type: string
-        - name: skip
-          in: query
-          description: Number of results to skip
-          required: true
-          type: integer
-        - name: limit
-          in: query
-          description: Number of maximum results to return
-          required: true
-          type: integer
-      responses:
-        "200":
-          description: Success. Returns a list of departments.
-          schema:
-            type: object
-            properties:
-              meta:
-                  properties:
-                    code:
-                      type: string
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Department'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-## Path /agencies ########################################################
-  /agencies:
-    get:
-      description: Returns the agencies matching the query
-      parameters:
-        - name: query
-          in: query
-          description: Terms used for the fuzzy phonetic full text search
-          required: true
-          type: string
-        - name: skip
-          in: query
-          description: Number of results to skip
-          required: true
-          type: integer
-        - name: limit
-          in: query
-          description: Number of maximum results to return
-          required: true
-          type: integer
-      responses:
-        "200":
-          description: Success. Returns a list of agencies.
-          schema:
-            type: object
-            properties:
-              meta:
-                  properties:
-                    code:
-                      type: string
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Agency'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-            
-## Path /subsidiaries ########################################################
-  /subsidiaries:
-    get:
-      description: Returns the subsidiaries matching the query
-      parameters:
-        - name: query
-          in: query
-          description: Terms used for the fuzzy phonetic full text search
-          required: true
-          type: string
-        - name: skip
-          in: query
-          description: Number of results to skip
-          required: true
-          type: integer
-        - name: limit
-          in: query
-          description: Number of maximum results to return
-          required: true
-          type: integer
-      responses:
-        "200":
-          description: Success. Returns a list of subsidiaries.
-          schema:
-            type: object
-            properties:
-              meta:
-                  properties:
-                    code:
-                      type: string
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Subsidiary'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-            
-## Path /themes ########################################################
-  /themes:
-    get:
-      description: Returns the themes matching the query
-      parameters:
-        - name: query
-          in: query
-          description: Terms used for the fuzzy phonetic full text search
-          required: true
-          type: string
-        - name: skip
-          in: query
-          description: Number of results to skip
-          required: true
-          type: integer
-        - name: limit
-          in: query
-          description: Number of maximum results to return
-          required: true
-          type: integer
-      responses:
-        "200":
-          description: Success. Returns a list of themes.
-          schema:
-            type: object
-            properties:
-              meta:
-                  properties:
-                    code:
-                      type: string
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Theme'
         default:
           description: Unexpected error
           schema:
