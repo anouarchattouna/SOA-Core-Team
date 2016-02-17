@@ -1,0 +1,267 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Visitors announcement REST API for Connected Building
+  description: |
+    This is the REST API to announce the arrival of visitors.
+
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/). 
+
+    This API is used by the mobile application developed by Schneider/Cardiweb
+    in the context of the **Connected Building** project, for the new buildings **Les Dunes**
+    in **Val de Fontenay**.
+
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, each response contains either a data or an error as the top level object. 
+
+    ### Security
+    This API is secure using the in house **GAIA** solution.
+
+    For each call to the API, both the SSO token GAIA and the Domain token GAIA must be provided in the HTTP headers:
+    ```
+    <sso-token-name>: <sso-token-value>
+    Authorization: Bearer <domain-token-value>
+    ```
+    ### Changelog
+    * v1.0.0: initial proposal
+
+host: h-apps.socgen.com
+basePath: /mybuilding/visitors/api/v1
+tags:
+  - name: Announces
+  - name: Buildings
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  announceId:
+    name: announceId
+    in: path
+    description: The id of the announce
+    type: string
+    required: true
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+## Path /buildings ########################################################
+  /buildings:
+    get:
+      tags:
+        - Buildings
+      description: Returns the buildings list
+      responses:
+        "200":
+          description: Success. Returns a list of buildings.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Building'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /announces ########################################################
+  /announces:
+    get:
+      tags:
+        - Announces
+      description: Returns all the announces
+      responses:
+        "200":
+          description: Success. Returns a list of people.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Announce'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    
+    post:
+      tags:
+        - Announces
+      description: Creates an announce
+      parameters:
+        - name: body
+          in: body
+          description: Announce data
+          required: true
+          schema:
+            $ref: '#/definitions/Announce'
+      responses:
+        "201":
+          description: |
+            "Success. Returns the URL of the announce in the location header."
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path announces/{announceId} ########################################################
+  /announces/{announceId}:
+    parameters:
+      - $ref: '#/parameters/announceId'
+    get:
+      tags:
+        - Announces
+      description: Returns an announce
+      responses:
+        "200":
+          description: Success. Returns an announce.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Announce'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+        - Announces
+      description: Updates an announce
+      parameters:
+        - name: body
+          in: body
+          description: Announce data
+          required: true
+          schema:
+            $ref: '#/definitions/Announce'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      tags:
+        - Announces
+      description: Deletes an announce
+      responses:
+        "204":
+          description: Success (204=No Content)
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Building:
+    description: Building data
+    type: object
+    properties:
+      id:
+        type: string
+        description: Identifier of the building
+      name:
+        type: string
+        description: Name of the building
+      receptions:
+        type: array
+        description: List of receptions
+        items:
+          $ref: '#/definitions/Reception'
+  
+  Reception:
+    description: Reception data
+    type: object
+    properties:
+      id:
+        type: string
+        description: Identifier of the reception
+      name:
+        type: string
+        description: Name of the reception
+    
+  Announce:
+    description: Announce data
+    type: object
+    properties:
+      id:
+        type: string
+        description: Identifier of the announce
+      building:
+        type: string
+        description: Identifier of the building
+      reception:
+        type: string
+        description: Identifier of the reception
+      datetime:
+        type: string
+        description: |
+          Date and time of the arrival of the visitors
+          [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+      visitors:
+        type: array
+        items:
+          $ref: '#/definitions/Visitor'
+        
+  Visitor:
+    description: Visitor data
+    type: object
+    properties:
+      civility:
+        type: string
+        description: Civility of the visitor
+      firstname: 
+        type: string
+        description: First name of the visitor
+      lastname: 
+        type: string
+        description: Last name of the visitor
+      company:
+        type: string
+        description: Company name of the visitor
+      email:
+        type: string
+        description: Email of the visitor
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
