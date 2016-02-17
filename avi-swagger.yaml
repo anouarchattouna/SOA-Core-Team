@@ -87,7 +87,30 @@ paths:
     get:
       tags:
         - Announces
-      description: Returns all the announces
+      parameters:
+        - name: startDatetime
+          in: query
+          description: Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+          required: false
+          type: string
+        - name: endDatetime
+          in: query
+          description: End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+          required: false
+          type: string
+        - name: lastname
+          in: query
+          description: First characters of the last name or full last name
+          required: false
+          type: string
+        - name: firstname
+          in: query
+          description: First characters of the first name or full first name
+          required: false
+          type: string
+      description: |
+        Returns all the announces.
+        By default returns only the announces which datetime is equal or greater than current datetime.
       responses:
         "200":
           description: Success. Returns a list of people.
@@ -244,12 +267,12 @@ definitions:
       civility:
         type: string
         description: Civility of the visitor
-      firstname: 
-        type: string
-        description: First name of the visitor
       lastname: 
         type: string
         description: Last name of the visitor
+      firstname: 
+        type: string
+        description: First name of the visitor
       company:
         type: string
         description: Company name of the visitor
