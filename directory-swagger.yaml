@@ -128,7 +128,7 @@ definitions:
         type: string
         description: Name of the subsidiary for which the person is working (e.g. "Banque de Polynésie")
       score:
-        type: float
+        type: number
         description: The score of the person
 
   Error:
