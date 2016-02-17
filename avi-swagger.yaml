@@ -255,6 +255,15 @@ definitions:
         description: |
           Date and time of the arrival of the visitors
           [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+      type:
+        type: string
+        description: Reception type
+      room:
+        type: string
+        description: Name of the room
+      comment:
+        type: string
+        description: Free comment
       visitors:
         type: array
         items:
