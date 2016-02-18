@@ -258,6 +258,12 @@ definitions:
       type:
         type: string
         description: Reception type
+      hostEmail:
+        type: string
+        description: Email of the person that will receive the visitors
+      contactEmail:
+        type: string
+        description: Email of the person to contact when the visitors arrives
       room:
         type: string
         description: Name of the room
