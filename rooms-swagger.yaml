@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.7"
+  version: "1.0.8"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -30,6 +30,8 @@ info:
     Authorization: Bearer <domain-token-value>
     ```
     ### Changelog
+    * v1.0.8
+      * For /rooms, remove the images
     * v1.0.7
       * For /buildings path, the site parameter is now optional
       * For /rooms path, the building parameter is now optional
@@ -543,22 +545,6 @@ definitions:
         description: Max number of people in the room        
       equipments:
           $ref: '#/definitions/RoomEquipments'
-      thumbnailUrl:
-        type: string
-        description: |
-          URL of the thumbnail of the room. Optional.
-          For performance reason, the thumbnail should be loaded maximum once per day and cached on the client side.
-          The client may also use this URL as an id of the thumbnail and load the actual thumbnail from its local storage.
-          Another option for the client is to NOT use this attribute but to use the room type attribute to choose 
-          the actual thumbnail to diplay (the actual thumbnail is then loaded from the client's local storage).
-      imageUrl:
-        type: string
-        description: |
-          URL of the image/visual of the room (large image displayed after a room is selected by the user). Optional.
-          For performance reason, the image should be loaded maximum once per day and cached on the client side.
-          The client may also use this URL as an id of the image and load the actual image from its local storage.
-          Another option for the client is to NOT use this attribute but to use the room type attribute to choose 
-          the actual image to diplay (the actual image is then loaded from the client's local storage).
           
   RoomEquipments:
     description: "Equipements of a room (telephone, video projector...)"
