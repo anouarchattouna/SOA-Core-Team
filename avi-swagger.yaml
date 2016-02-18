@@ -32,7 +32,7 @@ info:
 host: h-apps.socgen.com
 basePath: /mybuilding/visitors/api/v1
 tags:
-  - name: Announces
+  - name: Announcements
   - name: Buildings
 schemes:
   - https
@@ -45,10 +45,10 @@ produces:
 #                                           Parameters                         #
 ################################################################################
 parameters:
-  announceId:
-    name: announceId
+  announcementId:
+    name: announcementId
     in: path
-    description: The id of the announce
+    description: The id of the announcement
     type: string
     required: true
 
@@ -82,11 +82,11 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-## Path /announces ########################################################
-  /announces:
+## Path /announcements ########################################################
+  /announcements:
     get:
       tags:
-        - Announces
+        - Announcements
       parameters:
         - name: startDatetime
           in: query
@@ -109,11 +109,11 @@ paths:
           required: false
           type: string
       description: |
-        Returns all the announces.
-        By default returns only the announces which datetime is equal or greater than current datetime.
+        Returns all the announcements.
+        By default returns only the announcements which datetime is equal or greater than current datetime.
       responses:
         "200":
-          description: Success. Returns a list of people.
+          description: Success. Returns a list of announcements.
           schema:
             type: object
             properties:
@@ -124,7 +124,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/Announce'
+                  $ref: '#/definitions/Announcement'
         default:
           description: Unexpected error
           schema:
@@ -132,35 +132,35 @@ paths:
     
     post:
       tags:
-        - Announces
-      description: Creates an announce
+        - Announcements
+      description: Creates an announcement
       parameters:
         - name: body
           in: body
-          description: Announce data
+          description: Announcement data
           required: true
           schema:
-            $ref: '#/definitions/Announce'
+            $ref: '#/definitions/Announcement'
       responses:
         "201":
           description: |
-            "Success. Returns the URL of the announce in the location header."
+            "Success. Returns the URL of the announcement in the location header."
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
 
-## Path announces/{announceId} ########################################################
-  /announces/{announceId}:
+## Path announcements/{announcementId} ########################################################
+  /announcements/{announcementId}:
     parameters:
-      - $ref: '#/parameters/announceId'
+      - $ref: '#/parameters/announcementId'
     get:
       tags:
-        - Announces
-      description: Returns an announce
+        - Announcements
+      description: Returns an announcement
       responses:
         "200":
-          description: Success. Returns an announce.
+          description: Success. Returns an announcement.
           schema:
             type: object
             properties:
@@ -169,7 +169,7 @@ paths:
                   code:
                     type: string
               data:
-                $ref: '#/definitions/Announce'
+                $ref: '#/definitions/Announcement'
         default:
           description: Unexpected error
           schema:
@@ -177,15 +177,15 @@ paths:
 
     put:
       tags:
-        - Announces
-      description: Updates an announce
+        - Announcements
+      description: Updates an announcement
       parameters:
         - name: body
           in: body
-          description: Announce data
+          description: Announcement data
           required: true
           schema:
-            $ref: '#/definitions/Announce'
+            $ref: '#/definitions/Announcement'
       responses:
         "200":
           description: Success
@@ -196,8 +196,8 @@ paths:
 
     delete:
       tags:
-        - Announces
-      description: Deletes an announce
+        - Announcements
+      description: Deletes an announcement
       responses:
         "204":
           description: Success (204=No Content)
@@ -237,13 +237,13 @@ definitions:
         type: string
         description: Name of the reception
     
-  Announce:
+  Announcement:
     description: Announce data
     type: object
     properties:
       id:
         type: string
-        description: Identifier of the announce
+        description: Identifier of the announcement
       building:
         type: string
         description: Identifier of the building
