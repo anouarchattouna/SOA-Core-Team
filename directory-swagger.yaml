@@ -21,11 +21,16 @@ info:
     ### Security
     This API is secure using the in house **GAIA** solution.
 
-    For each call to the API, both the SSO token GAIA and the Domain token GAIA must be provided in the HTTP headers:
+    For each call to the API you must provide:
+    * In the HTTP headers the GAIA domain token :
     ```
-    <sso-token-name>: <sso-token-value>
     Authorization: Bearer <domain-token-value>
     ```
+    * In the Cookie the GAIA SSO token :
+    ```
+    Cookie: <sso-token-name>=<sso-token-value>
+    ```
+    
     ### Changelog
     * v1.0.0: initial proposal
 
