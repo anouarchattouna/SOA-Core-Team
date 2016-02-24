@@ -26,7 +26,7 @@ info:
     ```
     Authorization: Bearer <domain-token-value>
     ```
-    * In the Cookies the GAIA SSO token :
+    * In the Cookie the GAIA SSO token :
     ```
     Cookie: <sso-token-name>=<sso-token-value>
     ```
