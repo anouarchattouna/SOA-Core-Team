@@ -103,14 +103,9 @@ paths:
           description: End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
           required: false
           type: string
-        - name: lastname
+        - name: hostEmail
           in: query
-          description: First characters of the last name or full last name
-          required: false
-          type: string
-        - name: firstname
-          in: query
-          description: First characters of the first name or full first name
+          description: Email of the host
           required: false
           type: string
       description: |
