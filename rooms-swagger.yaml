@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.9"
+  version: "1.0.10"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -35,6 +35,8 @@ info:
     ```
 
     ### Changelog
+    * v1.0.10
+      * Add route to find a room by its id
     * v1.0.9
       * Switch to Atlas referential
       * Remove method /rooms/availability with roomsId parameter
@@ -84,6 +86,12 @@ parameters:
     name: bookingId
     in: path
     description: The id of the booking
+    type: string
+    required: true
+  roomId:
+    name: roomId
+    in: path
+    description: The id of the room
     type: string
     required: true
 
@@ -191,13 +199,37 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+## Path rooms/{roomId} ########################################################
+  /rooms/{roomId}:
+    parameters:
+      - $ref: '#/parameters/roomsId'
+    get:
+      tags:
+        - Rooms
+      description: Returns a room
+      responses:
+        "200":
+          description: Success. Returns a room.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Room'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 
 ## Path /rooms/availability #################################################
   /rooms/availability:
     get:
       tags:
         - Rooms
-      description: Returns the availability of rooms for a timeslot.
+      description: Returns the rooms available for a timeslot.
       parameters:
         - name: country
           in: query
