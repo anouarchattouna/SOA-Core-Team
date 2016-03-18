@@ -151,7 +151,7 @@ paths:
     get:
       tags:
         - Rooms
-      description: Returns the rooms of a building (the search can be limited to a specif floor)
+      description: Returns the rooms of a building (the search can be limited to a specific floor)
       parameters:
         - name: country
           in: query
@@ -224,8 +224,8 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-## Path /rooms/availability #################################################
-  /rooms/availability:
+## Path /rooms/available #################################################
+  /rooms/available:
     get:
       tags:
         - Rooms
