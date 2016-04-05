@@ -202,7 +202,7 @@ paths:
 ## Path rooms/{roomId} ########################################################
   /rooms/{roomId}:
     parameters:
-      - $ref: '#/parameters/roomsId'
+      - $ref: '#/parameters/roomId'
     get:
       tags:
         - Rooms
