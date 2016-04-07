@@ -1,0 +1,556 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Rooms REST API
+  description: |
+    This is the REST API to book a room for a meeting.
+
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/).
+    Just copy/paste the content of this YAML in the left pane of the Swagger editor.
+    The right pane will show you the well formatted documentation.
+
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, **each response contains either a data or an error as the top level object**. The **meta attribute provided
+    in each response is optional** and is reserved for future use to ease the parsing of response data.
+
+    ### Changelog
+    * v1.0.0: initial proposal
+
+host: h-apps.socgen.com
+basePath: /mybuilding/rooms/api/v1
+tags:
+  - name: Rooms
+  - name: Buildings
+  - name: Bookings
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  bookingId:
+    name: bookingId
+    in: path
+    description: The id of the booking
+    type: string
+    required: true
+  roomId:
+    name: roomId
+    in: path
+    description: The id of the room
+    type: string
+    required: true
+
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+
+## Path /buildings ########################################################
+  /buildings:
+    get:
+      tags:
+        - Buildings
+      description: |
+        Returns a list of buildings, with only one building if the building name is provided, but with  all the buildings of the site (or of the country if the site parameter is missing) if the buiding name is missing.
+        Does NOT return Rooms objects. Call /rooms to get Rooms.
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the building (e.g. "FR")
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay").
+          required: false
+          type: string
+        - name: building
+          in: query
+          description: Building name (e.g. "Les Dunes").
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of buildings.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Building'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+## Path /rooms ########################################################
+  /rooms:
+    get:
+      tags:
+        - Rooms
+      description: Returns the rooms of a building (the search can be limited to a specific floor)
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the building (e.g. "FR")
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay").
+          required: true
+          type: string
+        - name: building
+          in: query
+          description: Building name for which the rooms are searched (e.g. "Les Dunes").
+          required: true
+          type: string
+        - name: floor
+          in: query
+          description: |
+            Floor name for which the rooms are searched (e.g. "11").
+            If provided, the area parameter must also be provided.
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of rooms.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Room'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path rooms/{roomId} ########################################################
+  /rooms/{roomId}:
+    parameters:
+      - $ref: '#/parameters/roomId'
+    get:
+      tags:
+        - Rooms
+      description: Returns a room
+      responses:
+        "200":
+          description: Success. Returns a room.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Room'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /rooms/available #################################################
+  /rooms/available:
+    get:
+      tags:
+        - Rooms
+      description: Returns the rooms available for a timeslot.
+      parameters:
+        - name: country
+          in: query
+          description: Country code of the building (e.g. "FR").
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay").
+          required: true
+          type: string
+        - name: building
+          in: query
+          description: Building name for which the rooms are searched (e.g. "Les Dunes").
+          required: true
+          type: string
+        - name: floor
+          in: query
+          description: Floor name for which the rooms are searched (e.g. "11").
+          required: false
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the timeslot to check for availability."
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)  of the timeslot to check for availability."
+          required: true
+          type: string
+        - name: capacity
+          in: query
+          description: Minimum capacity of the rooms.
+          required: false
+          type: string
+        - name: visio
+          in: query
+          description: Should the rooms posses the material for a visio conference.
+          required: false
+          type: boolean
+        - name: video
+          in: query
+          description: Should the rooms posses a video projector.
+          required: false
+          type: boolean
+        - name: private
+          in: query
+          description: Search for private rooms or no.
+          required: false
+          type: boolean
+      responses:
+        "200":
+          description: Success. Returns an array with the available rooms.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Room'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+## Path /bookings ########################################################
+  /bookings:
+    get:
+      tags:
+        - Bookings
+      description: Returns the bookings of a room
+      parameters:
+        - name: room
+          in: query
+          description: RoomId for which the bookings are searched.
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search."
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search."
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns a list of bookings for the room.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Booking'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - Bookings
+      description: Creates a booking for a room
+      parameters:
+        - name: body
+          in: body
+          description: Booking data
+          required: true
+          schema:
+            $ref: '#/definitions/Booking'
+      responses:
+        "201":
+          description: "Success. Returns the URL of the booking in the location header."
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+## Path bookings/{bookingId} ########################################################
+  /bookings/{bookingId}:
+    parameters:
+      - $ref: '#/parameters/bookingId'
+    get:
+      tags:
+        - Bookings
+      description: Returns a booking
+      responses:
+        "200":
+          description: Success. Returns a booking.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Booking'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+        - Bookings
+      description: Updates a booking
+      parameters:
+        - name: body
+          in: body
+          description: Booking data
+          required: true
+          schema:
+            $ref: '#/definitions/Booking'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      tags:
+        - Bookings
+      description: Deletes a booking for a room
+      responses:
+        "204":
+          description: Success (204=No Content)
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /participants/availability #################################################
+  /participants/availability:
+    get:
+      tags:
+        - Participants
+      description: Returns the availability of the participants for a timeslot
+      parameters:
+        - name: participants
+          in: query
+          description: Comma separated list of the participants of the meeting (emails of the participants)
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the timeslot to check for availability"
+          required: true
+          type: string
+        - name: endDatetime
+          in: query
+          description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)  of the timeslot to check for availability"
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success. Returns an array with the availability of the participants.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/ParticipantAvailability'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Building:
+    description: Building data.
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the building
+      country:
+        type: string
+        description: Country code of the building
+      site:
+        type: string
+        description: Name of the site of the building
+      floors:
+        type: array
+        items:
+          $ref: '#/definitions/Floor'
+
+  Floor:
+    description: Floor data
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the floor
+      rooms:
+        type: array
+        items:
+          type: string
+          description: Rooms ids
+
+  Room:
+    description: Room data
+    type: object
+    properties:
+      id:
+        type: string
+        description: |
+          Identifier of the room.
+          Must NOT be displayed to the end-user.
+          Must NOT be parsed (must remain an opaque value).
+      name:
+        type: string
+        description: Name of the room (e.g. "Espace de Co-Création n°1").
+      building:
+        type: string
+        description: Building where the room is.
+      floor:
+        type: string
+        description: Floor where the room is.
+      public:
+        type: boolean
+        description: Tell if the room public or private.
+      capacity:
+        type: integer
+        description: Max number of people in the room.
+      equipments:
+          $ref: '#/definitions/RoomEquipments'
+
+  RoomEquipments:
+    description: "Equipements of a room (visio conference, video projector...)"
+    type: object
+    properties:
+      remoteControl:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      audioConference:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      videoConference:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      videoProjector:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      smartBoard:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      touchScreen:
+        type: boolean
+        description: Optional. Should be considered as false if not present or null.
+      others:
+        type: array
+        items:
+          type: string
+        description: Other equipments (non standard equipements). Optional. Should be considered as empty if not present or null.
+
+  Booking:
+    description: "Booking/schedule of a room for a meeting"
+    type: object
+    properties:
+      bookingId:
+        type: string
+        description: Id of the booking.
+      roomId:
+        type: string
+        description: Id of the booked room or room to book
+      startDatetime:
+        type: string
+        description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
+      endDatetime:
+        type: string
+        description: "End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
+      owner:
+        type: string
+        description: Owner/chairman of the meeting
+      object:
+        type: string
+        description: Object/Title of the meeting
+      mandatoryParticipants:
+        type: array
+        items:
+          type: string
+        description: List of the mandatory participants of the meeting (emails of the participants)
+      optionalParticipants:
+        type: array
+        items:
+          type: string
+        description: List of the optional participants of the meeting (emails of the participants)
+
+  ParticipantAvailability:
+    description: Indication of the availability of a participant of a meeting
+    type: object
+    properties:
+      participant:
+        type: string
+        description: Participant (email)
+      available:
+        type: boolean
+        description: true if the participant is available
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
