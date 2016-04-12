@@ -113,17 +113,17 @@ paths:
       parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR" ISO 3166).
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) of the building (e.g. "FRA").
           required: true
           type: string
         - name: site
           in: query
-          description: Site name of the building (e.g. "Val de Fontenay").
+          description: Site code of the building (e.g. "01").
           required: false
           type: string
         - name: building
           in: query
-          description: Building name (e.g. "Les Dunes").
+          description: Building code (e.g. "01").
           required: false
           type: string
       responses:
@@ -155,28 +155,28 @@ paths:
       parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR" ISO 3166).
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) of the building (e.g. "FRA").
           required: true
           type: string
         - name: site
           in: query
-          description: Site name of the building (e.g. "Val de Fontenay").
+          description: Site code of the building (e.g. "01").
           required: true
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "Les Dunes").
+          description: Building code for which the rooms are searched (e.g. "01").
           required: true
           type: string
         - name: area
           in: query
-          description: Area name for which the rooms are searched (e.g. "1").
+          description: Area code for which the rooms are searched (e.g. "01").
           required: false
           type: string
         - name: floor
           in: query
           description: |
-            Floor name for which the rooms are searched (e.g. "11").
+            Floor code for which the rooms are searched (e.g. "11").
             If provided, the area parameter must also be provided.
           required: false
           type: string
@@ -233,27 +233,27 @@ paths:
       parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR" ISO 3166).
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) of the building (e.g. "FRA").
           required: true
           type: string
         - name: site
           in: query
-          description: Site name of the building (e.g. "Val de Fontenay").
+          description: Site code of the building (e.g. "01").
           required: true
           type: string
         - name: building
           in: query
-          description: Building name for which the rooms are searched (e.g. "Les Dunes").
+          description: Building code for which the rooms are searched (e.g. "01").
           required: true
           type: string
         - name: area
           in: query
-          description: Area name for which the rooms are searched (e.g. "1").
+          description: Area code for which the rooms are searched (e.g. "01").
           required: true
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "11").
+          description: Floor code for which the rooms are searched (e.g. "11").
           required: false
           type: string
         - name: startDatetime
@@ -566,13 +566,13 @@ definitions:
         description: Name of the room (e.g. "Espace de Co-Création n°1").
       building:
         type: string
-        description: Building where the room is.
+        description: Building code where the room is.
       area:
         type: string
-        description: Area where the room is.
+        description: Area code where the room is.
       floor:
         type: string
-        description: Floor where the room is.
+        description: Floor code where the room is.
       public:
         type: boolean
         description: Tell if the room public or private.
