@@ -98,6 +98,7 @@ definitions:
   Person:
     description: Person data
     type: object
+    readOnly: true
     properties:
       id:
         type: string
@@ -139,6 +140,7 @@ definitions:
   Error:
     description: Error object with a code and a message
     type: object
+    readOnly: true
     properties:
       code:
         type: string
