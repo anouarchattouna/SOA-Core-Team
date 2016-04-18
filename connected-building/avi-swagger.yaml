@@ -213,6 +213,7 @@ definitions:
   Building:
     description: Building data
     type: object
+    readOnly: true
     properties:
       id:
         type: string
@@ -229,6 +230,7 @@ definitions:
   Reception:
     description: Reception data
     type: object
+    readOnly: true
     properties:
       id:
         type: string
@@ -240,6 +242,14 @@ definitions:
   Announcement:
     description: Announce data
     type: object
+    required:
+      - id
+      - building
+      - reception
+      - datetime
+      - type
+      - hostEmail
+      - visitors
     properties:
       id:
         type: string
@@ -278,6 +288,12 @@ definitions:
   Visitor:
     description: Visitor data
     type: object
+    required:
+      - civility
+      - lastname
+      - firstname
+      - company
+      - email
     properties:
       civility:
         type: string
@@ -298,6 +314,7 @@ definitions:
   Error:
     description: Error object with a code and a message
     type: object
+    readOnly: true
     properties:
       code:
         type: string
