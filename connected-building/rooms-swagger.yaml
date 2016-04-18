@@ -170,7 +170,7 @@ paths:
           type: string
         - name: area
           in: query
-          description: Area code for which the rooms are searched (e.g. "01").
+          description: Area code for which the rooms are searched (e.g. "A").
           required: false
           type: string
         - name: floor
@@ -248,7 +248,7 @@ paths:
           type: string
         - name: area
           in: query
-          description: Area code for which the rooms are searched (e.g. "01").
+          description: Area code for which the rooms are searched (e.g. "A").
           required: true
           type: string
         - name: floor
