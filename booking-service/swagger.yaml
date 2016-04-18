@@ -69,7 +69,7 @@ paths:
       parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR")
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) of the building (e.g. "FR").
           required: true
           type: string
         - name: site
@@ -111,7 +111,7 @@ paths:
       parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR")
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) of the building (e.g. "FR").
           required: true
           type: string
         - name: site
@@ -184,7 +184,7 @@ paths:
       parameters:
         - name: country
           in: query
-          description: Country code of the building (e.g. "FR").
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) of the building (e.g. "FR").
           required: true
           type: string
         - name: site
