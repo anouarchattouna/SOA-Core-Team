@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.10"
+  version: "1.0.11"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -35,8 +35,10 @@ info:
     ```
 
     ### Changelog
+    * v1.0.11
+      * Add the local notion and the office of the rooms
     * v1.0.10
-      * Add route to find a room by its id
+      * Add route to find a room by its technical identifier
     * v1.0.9
       * Switch to Atlas referential
       * Remove method /rooms/availability with roomsId parameter
@@ -85,13 +87,13 @@ parameters:
   bookingId:
     name: bookingId
     in: path
-    description: The id of the booking
+    description: The technical identifier of the booking
     type: string
     required: true
   roomId:
     name: roomId
     in: path
-    description: The id of the room
+    description: The technical identifier of the room (e.g. "R200856")
     type: string
     required: true
 
@@ -151,7 +153,7 @@ paths:
     get:
       tags:
         - Rooms
-      description: Returns the rooms of a building (the search can be limited to a specific floor)
+      description: Returns the rooms of a building (the search can be limited to a specific level)
       parameters:
         - name: country
           in: query
@@ -173,11 +175,18 @@ paths:
           description: Area code for which the rooms are searched (e.g. "A").
           required: false
           type: string
-        - name: floor
+        - name: level
           in: query
           description: |
-            Floor code for which the rooms are searched (e.g. "11").
+            Level code for which the rooms are searched (e.g. "11").
             If provided, the area parameter must also be provided.
+          required: false
+          type: string
+        - name: local
+          in: query
+          description: |
+            Local code for which the rooms are searched (e.g. "237").
+            If provided, the area and level parameter must also be provided.
           required: false
           type: string
       responses:
@@ -251,9 +260,9 @@ paths:
           description: Area code for which the rooms are searched (e.g. "A").
           required: true
           type: string
-        - name: floor
+        - name: level
           in: query
-          description: Floor code for which the rooms are searched (e.g. "11").
+          description: Level code for which the rooms are searched (e.g. "11").
           required: false
           type: string
         - name: startDatetime
@@ -535,19 +544,19 @@ definitions:
       name:
         type: string
         description: Name of the area
-      floors:
+      levels:
         type: array
         items:
-          $ref: '#/definitions/Floor'
+          $ref: '#/definitions/Level'
 
-  Floor:
-    description: Floor data
+  Level:
+    description: Level data
     type: object
     readOnly: true
     properties:
       name:
         type: string
-        description: Name of the floor
+        description: Name of the level
       rooms:
         type: array
         items:
@@ -562,24 +571,30 @@ definitions:
       id:
         type: string
         description: |
-          Identifier of the room.
+          Identifier of the room (e.g. "R200856").
           Must NOT be displayed to the end-user.
-          Must NOT be parsed (must remain an opaque value).
+          Must NOT be parsed (must remain an opaque value)
       name:
         type: string
-        description: Name of the room (e.g. "Espace de Co-Création n°1").
+        description: Name of the room  (e.g. "Room-Par-Def-A04224-Priv-10p")
+      office:
+        type: string
+        description: Office code of the room (e.g. "A04224")
       building:
         type: string
-        description: Building code where the room is.
+        description: Building code where the room is
       area:
         type: string
-        description: Area code where the room is.
-      floor:
+        description: Area code where the room is
+      level:
         type: string
-        description: Floor code where the room is.
+        description: Level code where the room is
+      local:
+        type: string
+        description: Local code where the room is
       public:
         type: boolean
-        description: Tell if the room public or private.
+        description: Tell if the room public or private
       capacity:
         type: integer
         description: Max number of people in the room.
@@ -627,10 +642,10 @@ definitions:
     properties:
       bookingId:
         type: string
-        description: Id of the booking.
+        description: Identifier of the booking.
       roomId:
         type: string
-        description: Id of the booked room or room to book
+        description: Identifier of the booked room or room to book
       startDatetime:
         type: string
         description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
