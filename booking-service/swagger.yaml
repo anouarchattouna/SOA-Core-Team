@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.0"
+  version: "1.0.1"
   title: Rooms REST API
   description: |
     This is the REST API to book a room for a meeting.
@@ -18,6 +18,7 @@ info:
     in each response is optional** and is reserved for future use to ease the parsing of response data.
 
     ### Changelog
+    * v1.0.1: Add office notion
     * v1.0.0: initial proposal
 
 host: h-apps.socgen.com
@@ -129,6 +130,13 @@ paths:
           description: |
             Floor name for which the rooms are searched (e.g. "11").
             If provided, the area parameter must also be provided.
+          required: false
+          type: string
+        - name: office
+          in: query
+          description: |
+            Office name of the room searched (e.g. "C11243").
+            If provided, the floor parameter must also be provided.
           required: false
           type: string
       responses:
