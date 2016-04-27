@@ -21,8 +21,7 @@ info:
     * v1.0.1: Add office notion
     * v1.0.0: initial proposal
 
-host: h-apps.socgen.com
-basePath: /mybuilding/rooms/api/v1
+basePath: /rooms/api/v1
 tags:
   - name: Rooms
   - name: Buildings
