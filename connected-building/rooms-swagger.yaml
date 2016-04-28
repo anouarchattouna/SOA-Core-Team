@@ -90,12 +90,6 @@ parameters:
     description: The technical identifier of the booking
     type: string
     required: true
-  roomId:
-    name: roomId
-    in: path
-    description: The technical identifier of the room (e.g. "R200856")
-    type: string
-    required: true
 
 
 ################################################################################
@@ -208,31 +202,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-## Path rooms/{roomId} ########################################################
-  /rooms/{roomId}:
-    parameters:
-      - $ref: '#/parameters/roomId'
-    get:
-      tags:
-        - Rooms
-      description: Returns a room
-      responses:
-        "200":
-          description: Success. Returns a room.
-          schema:
-            type: object
-            properties:
-              meta:
-                properties:
-                  code:
-                    type: string
-              data:
-                $ref: '#/definitions/Room'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
 ## Path /rooms/available #################################################
   /rooms/available:
     get:
@@ -263,6 +232,13 @@ paths:
         - name: level
           in: query
           description: Level code for which the rooms are searched (e.g. "11").
+          required: false
+          type: string
+        - name: local
+          in: query
+          description: |
+            Local code for which the rooms are searched (e.g. "237").
+            If provided, the area and level parameter must also be provided.
           required: false
           type: string
         - name: startDatetime
@@ -322,9 +298,36 @@ paths:
         - Bookings
       description: Returns the bookings of a room
       parameters:
-        - name: room
+        - name: country
           in: query
-          description: RoomId for which the bookings are searched.
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the building (e.g. "FRA").
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site code of the building (e.g. "01").
+          required: true
+          type: string
+        - name: building
+          in: query
+          description: Building code for which the rooms are searched (e.g. "01").
+          required: true
+          type: string
+        - name: area
+          in: query
+          description: Area code for which the rooms are searched (e.g. "A").
+          required: true
+          type: string
+        - name: level
+          in: query
+          description: Level code for which the rooms are searched (e.g. "11").
+          required: true
+          type: string
+        - name: local
+          in: query
+          description: |
+            Local code for which the rooms are searched (e.g. "237").
+            If provided, the area and level parameter must also be provided.
           required: true
           type: string
         - name: startDatetime
@@ -520,7 +523,6 @@ definitions:
   Building:
     description: Building data.
     type: object
-    readOnly: true
     properties:
       name:
         type: string
@@ -539,7 +541,6 @@ definitions:
   Area:
     description: Area data
     type: object
-    readOnly: true
     properties:
       name:
         type: string
@@ -552,7 +553,6 @@ definitions:
   Level:
     description: Level data
     type: object
-    readOnly: true
     properties:
       name:
         type: string
@@ -566,7 +566,6 @@ definitions:
   Room:
     description: Room data
     type: object
-    readOnly: true
     properties:
       id:
         type: string
@@ -604,7 +603,6 @@ definitions:
   RoomEquipments:
     description: "Equipements of a room (visio conference, video projector...)"
     type: object
-    readOnly: true
     properties:
       remoteControl:
         type: boolean
@@ -672,7 +670,6 @@ definitions:
   ParticipantAvailability:
     description: Indication of the availability of a participant of a meeting
     type: object
-    readOnly: true
     properties:
       participant:
         type: string
@@ -684,7 +681,6 @@ definitions:
   Error:
     description: Error object with a code and a message
     type: object
-    readOnly: true
     properties:
       code:
         type: string
