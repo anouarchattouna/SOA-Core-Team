@@ -524,15 +524,15 @@ definitions:
     description: Building data.
     type: object
     properties:
-      name:
+      code:
         type: string
-        description: Name of the building
+        description: Code of the building (e.g. "01")
       country:
         type: string
-        description: Country code of the building
+        description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the building (e.g. "FRA")
       site:
         type: string
-        description: Name of the site of the building
+        description: Site code of the building (e.g. "01")
       areas:
         type: array
         items:
@@ -542,9 +542,9 @@ definitions:
     description: Area data
     type: object
     properties:
-      name:
+      code:
         type: string
-        description: Name of the area
+        description: Code of the area (e.g. "A")
       levels:
         type: array
         items:
@@ -554,43 +554,40 @@ definitions:
     description: Level data
     type: object
     properties:
-      name:
+      code:
         type: string
-        description: Name of the level
+        description: Code of the level (e.g. "11")
       rooms:
         type: array
         items:
           type: string
-          description: Rooms ids
+          description: Rooms local code (e.g. "237")
 
   Room:
     description: Room data
     type: object
     properties:
-      id:
-        type: string
-        description: |
-          Identifier of the room (e.g. "R200856").
-          Must NOT be displayed to the end-user.
-          Must NOT be parsed (must remain an opaque value)
       name:
         type: string
         description: Name of the room  (e.g. "Room-Par-Def-A04224-Priv-10p")
-      office:
+      country:
         type: string
-        description: Office code of the room (e.g. "A04224")
+        description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the room (e.g. "FRA")
+      site:
+        type: string
+        description: Site code of the room (e.g. "01")
       building:
         type: string
-        description: Building code where the room is
+        description: Building code of the room (e.g. "01")
       area:
         type: string
-        description: Area code where the room is
+        description: Area code of the room (e.g. "A")
       level:
         type: string
-        description: Level code where the room is
+        description: Level code of the room (e.g. "11")
       local:
         type: string
-        description: Local code where the room is
+        description: Local code of the room (e.g. "237")
       public:
         type: boolean
         description: Tell if the room public or private
@@ -633,7 +630,12 @@ definitions:
     type: object
     required:
       - bookingId
-      - roomId
+      - country
+      - site
+      - building
+      - area
+      - level
+      - local
       - startDatetime
       - endDatetime
       - owner
@@ -641,9 +643,24 @@ definitions:
       bookingId:
         type: string
         description: Identifier of the booking.
-      roomId:
+      country:
         type: string
-        description: Identifier of the booked room or room to book
+        description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the room (e.g. "FRA")
+      site:
+        type: string
+        description: Site code of the room (e.g. "01")
+      building:
+        type: string
+        description: Building code of the room (e.g. "01")
+      area:
+        type: string
+        description: Area code of the room (e.g. "A")
+      level:
+        type: string
+        description: Level code of the room (e.g. "11")
+      local:
+        type: string
+        description: Local code of the room (e.g. "237")
       startDatetime:
         type: string
         description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
