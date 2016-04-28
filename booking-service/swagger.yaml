@@ -209,6 +209,13 @@ paths:
           description: Floor name for which the rooms are searched (e.g. "11").
           required: false
           type: string
+        - name: office
+          in: query
+          description: |
+            Office name of the room searched (e.g. "C11243").
+            If provided, the floor parameter must also be provided.
+          required: false
+          type: string
         - name: startDatetime
           in: query
           description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the timeslot to check for availability."
@@ -260,15 +267,48 @@ paths:
 
 
 ## Path /bookings ########################################################
+
   /bookings:
     get:
       tags:
         - Bookings
-      description: Returns the bookings of a room
+      description: |
+        Returns the bookings of a room or a person.
+        You'll need to pass the room identifier or the CSBFO tuple of the room or the person email.
       parameters:
-        - name: room
+        - name: roomId
           in: query
           description: RoomId for which the bookings are searched.
+          required: true
+          type: string
+        - name: country
+          in: query
+          description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) of the building (e.g. "FR").
+          required: true
+          type: string
+        - name: site
+          in: query
+          description: Site name of the building (e.g. "Val de Fontenay").
+          required: true
+          type: string
+        - name: building
+          in: query
+          description: Building name for which the rooms are searched (e.g. "Les Dunes").
+          required: true
+          type: string
+        - name: floor
+          in: query
+          description: Floor name for which the rooms are searched (e.g. "11").
+          required: true
+          type: string
+        - name: office
+          in: query
+          description: Office name of the room searched (e.g. "C11243").
+          required: true
+          type: string
+        - name: person
+          in: query
+          description: Person email (e.g. "jean.dupond@socgen.com").
           required: true
           type: string
         - name: startDatetime
