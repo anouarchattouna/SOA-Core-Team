@@ -36,7 +36,8 @@ info:
 
     ### Changelog
     * v1.0.11
-      * Add the local notion and the office of the rooms
+      * Add the local notion
+      * Remove route to find a room by its technical identifier
     * v1.0.10
       * Add route to find a room by its technical identifier
     * v1.0.9
