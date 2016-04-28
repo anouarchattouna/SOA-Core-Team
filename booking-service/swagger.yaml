@@ -509,15 +509,21 @@ definitions:
       name:
         type: string
         description: Name of the room (e.g. "Room-Par-Def-A04224-Priv-10p").
-      office:
+      country:
         type: string
-        description: Office name of the room (e.g. "A04224")
+        description: Country where the room is.
+      site:
+        type: string
+        description: Site where the room is.
       building:
         type: string
         description: Building where the room is.
       floor:
         type: string
         description: Floor where the room is.
+      office:
+        type: string
+        description: Office name of the room (e.g. "A04224")
       public:
         type: boolean
         description: Tell if the room public or private.
