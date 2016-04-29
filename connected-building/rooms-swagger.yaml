@@ -91,7 +91,12 @@ parameters:
     description: The technical identifier of the booking
     type: string
     required: true
-
+  roomId:		
+    name: roomId		
+    in: path		
+    description: The technical identifier of the room (e.g. "R200856")		
+    type: string		
+    required: true
 
 ################################################################################
 #                                           Paths                              #
@@ -203,6 +208,31 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+## Path rooms/{roomId} ########################################################		
+ /rooms/{roomId}:		
+    parameters:		
+      - $ref: '#/parameters/roomId'		
+    get:		
+      tags:		
+        - Rooms		
+      description: Returns a room		
+      responses:		
+        "200":		
+          description: Success. Returns a room.		
+          schema:		
+            type: object		
+            properties:		
+              meta:		
+                properties:		
+                  code:		
+                    type: string		
+              data:		
+                $ref: '#/definitions/Room'		
+        default:		
+          description: Unexpected error		
+          schema:		
+            $ref: '#/definitions/Error'
+
 ## Path /rooms/available #################################################
   /rooms/available:
     get:
@@ -297,8 +327,9 @@ paths:
     get:
       tags:
         - Bookings
-      description: Returns the bookings of a room
+      description: Returns the bookings of a room. Can be called using the technical identifier of the room or the CSBALO tuple.
       parameters:
+        - $ref: '#/parameters/roomId'
         - name: country
           in: query
           description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the building (e.g. "FRA").
@@ -568,6 +599,12 @@ definitions:
     description: Room data
     type: object
     properties:
+      id:
+       type: string
+       description: |
+        Identifier of the room (e.g. "R200856").
+        Must NOT be displayed to the end-user.
+        Must NOT be parsed (must remain an opaque value)
       name:
         type: string
         description: Name of the room  (e.g. "Room-Par-Def-A04224-Priv-10p")
