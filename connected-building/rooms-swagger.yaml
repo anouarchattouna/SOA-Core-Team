@@ -593,11 +593,11 @@ definitions:
       code:
         type: string
         description: Code of the level (e.g. "11")
-      locals:
+      rooms:
         type: array
         items:
           type: string
-          description: Local code of the rooms (e.g. "237")
+          description: The technical identifier of the room (e.g. "R200856")
 
   Room:
     description: Room data
