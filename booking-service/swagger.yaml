@@ -128,7 +128,7 @@ paths:
         - name: floor
           in: query
           description: |
-            Floor name for which the rooms are searched (e.g. "11").
+            Floor name for which the rooms are searched (e.g. "C11").
             If provided, the area parameter must also be provided.
           required: false
           type: string
@@ -207,7 +207,7 @@ paths:
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "11").
+          description: Floor name for which the rooms are searched (e.g. "C11").
           required: false
           type: string
         - name: office
@@ -299,7 +299,7 @@ paths:
           type: string
         - name: floor
           in: query
-          description: Floor name for which the rooms are searched (e.g. "11").
+          description: Floor name for which the rooms are searched (e.g. "C11").
           required: true
           type: string
         - name: office
