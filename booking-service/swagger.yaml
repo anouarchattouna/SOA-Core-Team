@@ -466,7 +466,6 @@ definitions:
   Building:
     description: Building data.
     type: object
-    readOnly: true
     properties:
       name:
         type: string
@@ -485,7 +484,6 @@ definitions:
   Floor:
     description: Floor data
     type: object
-    readOnly: true
     properties:
       name:
         type: string
@@ -499,7 +497,6 @@ definitions:
   Room:
     description: Room data
     type: object
-    readOnly: true
     properties:
       id:
         type: string
@@ -537,7 +534,6 @@ definitions:
   RoomEquipments:
     description: "Equipements of a room (visio conference, video projector...)"
     type: object
-    readOnly: true
     properties:
       remoteControl:
         type: boolean
@@ -605,7 +601,6 @@ definitions:
   ParticipantAvailability:
     description: Indication of the availability of a participant of a meeting
     type: object
-    readOnly: true
     properties:
       participant:
         type: string
@@ -617,7 +612,6 @@ definitions:
   Error:
     description: Error object with a code and a message
     type: object
-    readOnly: true
     properties:
       code:
         type: string

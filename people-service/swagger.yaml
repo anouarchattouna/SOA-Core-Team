@@ -1,0 +1,510 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0"
+  title: People REST API
+  description: |
+    This is the REST API to get people information from sgdir.
+
+    You can view the content of this YAML file in the
+    [Swagger editor](http://editor.swagger.io/). Just copy/paste the content of
+    this YAML in the left pane of the Swagger editor.
+    The right pane will show you the well formatted documentation.
+
+    The design of the API is based on the
+    [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, **each response contains either a data or an error as the top
+    level object**. The **meta attribute provided in each response is optional**
+    and is reserved for future use to ease the parsing of response data.
+
+    ### Security
+    This API is secure using [jwt](https://jwt.io/) token authentication.
+
+    For each call to the API you must provide in the HTTP headers:
+    ```
+    Authorization: Bearer <json-web-token>
+    ```
+
+    The token need to be signed using a private key.
+    The payload shall contains the email of the user issuing the query.
+
+    ### Changelog
+    * v1.0
+      * Add the jwt authentication
+      * Add a route to get a list of person through a fuzzy search
+      * Add a route to get data about a person
+      * Add a route to get a person picture
+      * Add a route to get the list of favorites
+      * Add a route to add a new person into the list of favorites
+      * Add a route to remove a person from the list of favorites
+
+host: apps.socgen.com
+basePath: /sgdir/connected-building/api/v1
+tags:
+  - name: People
+  - name: Favorites
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+  - image/jpeg
+  - image/png
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  userEmail:
+    name: userEmail
+    in: query
+    description: The email of the user issuing the query.
+    type: string
+    required: true
+  peopleId:
+    name: peopleId
+    in: path
+    description: The unique sgdir identifier of a person.
+    type: string
+    required: true
+  peopleIdInQuery:
+    name: peopleId
+    in: query
+    description: The unique sgdir identifier of a person.
+    type: string
+    required: true
+  favoriteId:
+    name: favoriteId
+    in: path
+    description: The unique sgdir identifier of a favorite.
+    type: string
+    required: true
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+## Path /people/partial ########################################################
+  /people/partial:
+    get:
+      tags:
+        - People
+      description: Returns the result of the fuzzy search of the provided request parameter.
+      parameters:
+        - name: request
+          in: query
+          required: true
+          description: The search request.
+          type: string
+        - name: start
+          in: query
+          required: false
+          description: Returns persons starting at this parameter. Default value is zero.
+          type: integer
+          default: 0
+        - name: count
+          in: query
+          required: false
+          description: Number of persons returned by the query. Default value is 10, maximum value is 50.
+          type: integer
+          default: 10
+      responses:
+        "200":
+          description: Success. Returns a list of person.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/MetadataMessage'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/PeoplePartialData'
+        "400":
+          description: Bad request parameters.
+          schema:
+            $ref: '#/definitions/Error'
+        "401":
+          description: Bad authentication token
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /people ################################################################
+  /people/{peopleId}:
+    get:
+      tags:
+        - People
+      description: |
+        Returns data for a person corresponding to the provided identifier.
+      parameters:
+        - $ref: '#/parameters/peopleId'
+      responses:
+        "200":
+          description: Success. Returns data for the person.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/MetadataMessage'
+              data:
+                $ref: '#/definitions/PeopleData'
+        "400":
+          description: Bad request parameters.
+          schema:
+            $ref: '#/definitions/Error'
+        "401":
+          description: Bad authentication token.
+          schema:
+            $ref: '#/definitions/Error'
+        "404":
+          description: Person not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /pictures ##############################################################
+  /pictures:
+    get:
+      tags:
+        - People
+      description: |
+        Returns the raw picture (in jpeg format) of a person whose identifier is provided.
+        This does NOT return an url.
+      parameters:
+        - $ref: '#/parameters/peopleIdInQuery'
+      responses:
+        "200":
+          description: Success. Returns the picture of the person.
+          schema:
+            type: file
+        "400":
+          description: Bad request parameters.
+          schema:
+            $ref: '#/definitions/Error'
+        "401":
+          description: Bad authentication token.
+          schema:
+            $ref: '#/definitions/Error'
+        "404":
+          description: Picture not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /favorites #############################################################
+  /favorites:
+    get:
+      tags:
+        - Favorites
+      parameters:
+        - $ref: '#/parameters/userEmail'
+      description: |
+          Returns all favorites of the person issuing the query i.e. whose email
+          is in the jwt token payload.
+      responses:
+        "200":
+          description: |
+            Success. Returns the list of favorites for the person whose email
+            is provided in parameters.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/MetadataMessage'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/FavoriteData'
+        "401":
+          description: Bad authentication token.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+        - Favorites
+      description: |
+        Adds the person whose id is provided to the list of favorites of the
+        user whose email is provided.
+      parameters:
+        - $ref: '#/parameters/userEmail'
+        - $ref: '#/parameters/peopleIdInQuery'
+      responses:
+        "201":
+          description: |
+            Success. Returns the URL of the added favorite the in the location
+            header.
+        "400":
+          description: Maximum number of favorites exceeded.
+          schema:
+            $ref: '#/definitions/Error'
+        "401":
+          description: Bad authentication token.
+          schema:
+            $ref: '#/definitions/Error'
+        "404":
+          description: Person not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /favorites #############################################################
+  /favorites/{favoriteId}:
+    get:
+      tags:
+        - Favorites
+      description: Returns the favorite whose id is provided.
+      parameters:
+        - $ref: '#/parameters/favoriteId'
+      responses:
+        "200":
+          description: Success. Returns data for the favorite.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/MetadataMessage'
+              data:
+                $ref: '#/definitions/FavoriteData'
+        "401":
+          description: Bad authentication token.
+          schema:
+            $ref: '#/definitions/Error'
+        "404":
+          description: Favorite not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - Favorites
+      description: Removes the favorite whose id is provided.
+      parameters:
+        - $ref: '#/parameters/favoriteId'
+      responses:
+        "204":
+          description: Success.
+        "401":
+          description: Bad authentication token.
+          schema:
+            $ref: '#/definitions/Error'
+        "404":
+          description: Favorite not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  PeopleCredential:
+    description: People credentials.
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique identifier for sg-dir application.
+      lastname:
+        type: string
+        description: The last name of the person.
+      firstname:
+        type: string
+        description: The first name of the person.
+
+  PeoplePartialData:
+    description: People partial data.
+    type: object
+    properties:
+      credential:
+        $ref: '#/definitions/PeopleCredential'
+      sex:
+        type: string
+        description: The sex of the person (eg. "female", "male").
+      service:
+        type: string
+        description: The name of the service of the person.
+      email:
+        type: string
+        description: The email of the person.
+      phone_landline:
+        type: string
+        description: A string containing the landline phone number of the person.
+      phone_cell:
+        type: string
+        description: A string containing the cell phone number of the person.
+      company:
+        type: string
+        description: The name of the company the person works for.
+      building:
+        type: string
+        description: The name of the building where the person works.
+      office:
+        type: string
+        description: The office of the person (e.g. "A03084").
+
+  Address:
+    description: Address data.
+    type: object
+    properties:
+      building:
+        type: string
+        description: Name of the building.
+      building_code:
+        type: string
+        description: Code GEST_IMM for the building (e.g. 32149 for Chassagne).
+      floor:
+        type: integer
+        description: Floor.
+      office:
+        type: string
+        description: Office.
+      desk:
+        type: string
+        description: Desk.
+      address_l1:
+        type: string
+        description: Address (1st line).
+      address_l2:
+        type: string
+        description: Address (2nd line).
+      address_l3:
+        type: string
+        description: Address (3rd line).
+      postal_code:
+        type: string
+        description: Postal code.
+      city:
+        type: string
+        description: City.
+      country:
+        type: string
+        description: Country code of the building
+
+  PostalAddress:
+    description: Postal address data.
+    type: object
+    properties:
+      entity:
+        type: string
+        description: Name of the entity.
+      address_l1:
+        type: string
+        description: Address (1st line).
+      address_l2:
+        type: string
+        description: Address (2nd line).
+      address_l3:
+        type: string
+        description: Address (3rd line).
+      postal_code:
+        type: string
+        description: Postal code.
+      city:
+        type: string
+        description: City.
+      country:
+        type: string
+        description: Country code of the building
+
+  PeopleData:
+    description: People data.
+    type: object
+    properties:
+      credential:
+        $ref: '#/definitions/PeopleCredential'
+      igg:
+        type: string
+        description: IGG identifier.
+      sex:
+        type: string
+        description: The sex of the person (eg. "female", "male").
+      service:
+        type: string
+        description: The name of the service of the person.
+      company:
+        type: string
+        description: The name of the company the person works for.
+      phone_landline:
+        type: string
+        description: A string containing the landline phone number of the person.
+      phone_cell:
+        type: string
+        description: A string containing the cell phone number of the person.
+      email:
+        type: string
+        description: The email of the person.
+      manager:
+        $ref: '#/definitions/PeopleCredential'
+      function:
+        type: string
+        description: Function.
+      assistants:
+        type: array
+        items:
+          $ref: '#/definitions/PeopleCredential'
+      address:
+        $ref: '#/definitions/Address'
+      postal_address:
+        $ref: '#/definitions/PostalAddress'
+      mailing_title:
+        type: string
+        description: Internal address.
+      show_picture:
+        type: boolean
+        description: True if and only if there is a picture to be displayed.
+
+  FavoriteData:
+    description: Favorite data.
+    type: object
+    properties:
+      id:
+        type: string
+        description: unique identifier for the favorite.
+      peoplePartialData:
+        $ref: '#/definitions/PeoplePartialData'
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+
+  MetadataMessage:
+    description: Message and status in metadata
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string

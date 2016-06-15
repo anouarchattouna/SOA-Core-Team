@@ -9,14 +9,14 @@ info:
   description: |
     This is the REST API to announce the arrival of visitors.
 
-    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/). 
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/).
 
     This API is used by the mobile application developed by Schneider/Cardiweb
     in the context of the **Connected Building** project, for the new buildings **Les Dunes**
     in **Val de Fontenay**.
 
     The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
-    For example, each response contains either a data or an error as the top level object. 
+    For example, each response contains either a data or an error as the top level object.
 
     ### Security
     This API is secure using the in house **GAIA** solution.
@@ -30,7 +30,7 @@ info:
     ```
     Cookie: <sso-token-name>=<sso-token-value>
     ```
-    
+
     ### Changelog
     * v1.0.0: initial proposal
 
@@ -129,7 +129,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-    
+
     post:
       tags:
         - Announcements
@@ -213,7 +213,6 @@ definitions:
   Building:
     description: Building data
     type: object
-    readOnly: true
     properties:
       id:
         type: string
@@ -226,11 +225,10 @@ definitions:
         description: List of receptions
         items:
           $ref: '#/definitions/Reception'
-  
+
   Reception:
     description: Reception data
     type: object
-    readOnly: true
     properties:
       id:
         type: string
@@ -238,7 +236,7 @@ definitions:
       name:
         type: string
         description: Name of the reception
-    
+
   Announcement:
     description: Announce data
     type: object
@@ -284,7 +282,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Visitor'
-        
+
   Visitor:
     description: Visitor data
     type: object
@@ -298,10 +296,10 @@ definitions:
       civility:
         type: string
         description: Civility of the visitor
-      lastname: 
+      lastname:
         type: string
         description: Last name of the visitor
-      firstname: 
+      firstname:
         type: string
         description: First name of the visitor
       company:
@@ -314,7 +312,6 @@ definitions:
   Error:
     description: Error object with a code and a message
     type: object
-    readOnly: true
     properties:
       code:
         type: string
