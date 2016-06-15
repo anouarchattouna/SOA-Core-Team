@@ -473,6 +473,9 @@ definitions:
       show_picture:
         type: boolean
         description: True if and only if there is a picture to be displayed.
+      authorizeMeetMe:
+        type: boolean
+        description: Does the person authorize the meet me functionnality. Can be null if the person did not connect on the MyBuilding application.
 
   FavoriteData:
     description: Favorite data.
