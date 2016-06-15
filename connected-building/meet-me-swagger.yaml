@@ -1,0 +1,237 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Meet Me REST API for Connected Building
+  description: |
+    This is the REST API to ask someone for an appointment.
+
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/).
+
+    This API is used by the mobile application developed by Schneider/Cardiweb
+    in the context of the **Connected Building** project, for the new buildings **Les Dunes**
+    in **Val de Fontenay**.
+
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, each response contains either a data or an error as the top level object.
+
+    ### Security
+    This API is secure using the in house **GAIA** solution.
+
+    For each call to the API you must provide:
+    * In the HTTP headers the GAIA domain token :
+    ```
+    Authorization: Bearer <domain-token-value>
+
+    ### Changelog
+    * v1.0.0: Initial proposal
+
+host: h-apps.socgen.com
+basePath: /mybuilding/meet-me/api/v1
+tags:
+  - name: Devices
+  - name: Appointments
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  appointementId:
+    name: appointementId
+    in: path
+    description: The identifier of the appointment
+    type: string
+    required: true
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+## Path /devices/enroll ########################################################
+  /devices/enroll:
+    post:
+      tags:
+        - Devices
+      description: Enroll a device
+      parameters:
+        - name: body
+          in: body
+          description: Enrollment data
+          required: true
+          schema:
+            $ref: '#/definitions/Enrollment'
+      responses:
+        "201":
+          description: Success. The enrollment of the device went successfuly.
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path /appointements ########################################################
+  /appointements:
+    get:
+      tags:
+        - Appointments
+      parameters:
+        - name: personId
+          in: query
+          description: Identifier of the person
+          required: true
+          type: string
+        - name: startDatetime
+          in: query
+          description: Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+          required: false
+          type: string
+        - name: endDatetime
+          in: query
+          description: End datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+          required: false
+          type: string
+      description: |
+        Returns all the appointments of a person (received of emitted).
+      responses:
+        "200":
+          description: Success. Returns a list of appointments.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Appointment'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - Appointments
+      description: Creates an appointment
+      parameters:
+        - name: body
+          in: body
+          description: Appointment data
+          required: true
+          schema:
+            $ref: '#/definitions/Appointment'
+      responses:
+        "201":
+          description: |
+            "Success. Returns the URL of the appointment in the location header."
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path appointements/{appointementId} ########################################################
+  /appointements/{appointementId}:
+    parameters:
+      - $ref: '#/parameters/appointementId'
+    get:
+      tags:
+        - Appointments
+      description: Returns an appointment
+      responses:
+        "200":
+          description: Success. Returns an appointment.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Appointment'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+        - Appointments
+      description: Updates an appointments
+      parameters:
+        - name: body
+          in: body
+          description: Appointment data
+          required: true
+          schema:
+            $ref: '#/definitions/Appointment'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Enrollment:
+    description: Enrollment data
+    type: object
+    required:
+      - personId
+      - pushToken
+      - accept
+    properties:
+      personId:
+        type: string
+        description: Identifier of the person
+      pushToken:
+        type: string
+        description: Push token of the device
+      accept:
+        type: boolean
+        description: Does the user accept the meet me functionnality
+
+  Appointment:
+    description: Appointment data
+    type: object
+    required:
+      - id
+      - callerId
+      - receiverId
+    properties:
+      id:
+        type: string
+        description: Identifier of the appointment
+      callerId:
+        type: string
+        description: Identifier of the person which called
+      receiverId:
+        type: string
+        description: Identifier of the person which received
+      datetime:
+        type: string
+        description: Date and time of the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
