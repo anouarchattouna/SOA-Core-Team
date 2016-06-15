@@ -202,15 +202,14 @@ definitions:
       pushToken:
         type: string
         description: Push token of the device
-      accept:
+      authorizeMeetMe:
         type: boolean
-        description: Does the user accept the meet me functionnality
+        description: Does the user authorize the meet me functionnality
 
   Appointment:
     description: Appointment data
     type: object
     required:
-      - id
       - callerId
       - receiverId
     properties:
@@ -223,9 +222,15 @@ definitions:
       receiverId:
         type: string
         description: Identifier of the person which received
-      datetime:
+      creationDatetime:
         type: string
-        description: Date and time of the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+        description: Date and time of the creation of the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+      responseDatetime:
+        type: string
+        description: Date and time of the response to the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+      accepted:
+        type: boolean
+        description: Does the receiver accepter or not the appointment
 
   Error:
     description: Error object with a code and a message
