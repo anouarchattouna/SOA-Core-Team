@@ -194,7 +194,7 @@ definitions:
     required:
       - personId
       - pushToken
-      - accept
+      - authorizeMeetMe
     properties:
       personId:
         type: string
@@ -205,6 +205,9 @@ definitions:
       authorizeMeetMe:
         type: boolean
         description: Does the user authorize the meet me functionnality
+      language:
+        type: string
+        description: Language of the user, can be "fr" or "en"
 
   Appointment:
     description: Appointment data
