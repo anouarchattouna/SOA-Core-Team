@@ -59,7 +59,7 @@ paths:
 
 ## Path /devices/enroll ########################################################
   /devices/enroll:
-    post:
+    put:
       tags:
         - Devices
       description: Enroll a device
