@@ -84,11 +84,6 @@ paths:
       tags:
         - Appointments
       parameters:
-        - name: personId
-          in: query
-          description: Identifier of the person
-          required: true
-          type: string
         - name: startDatetime
           in: query
           description: Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
@@ -192,12 +187,8 @@ definitions:
     description: Enrollment data
     type: object
     required:
-      - personId
       - authorizeMeetMe
     properties:
-      personId:
-        type: string
-        description: Identifier of the person
       pushToken:
         type: string
         description: Push token of the device
