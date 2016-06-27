@@ -208,19 +208,19 @@ definitions:
     properties:
       id:
         type: string
-        description: Identifier of the appointment
+        description: Identifier of the appointment (automatically calculated)
       callerId:
         type: string
-        description: Identifier of the person which called
+        description: Identifier of the person which called (automatically calculated on POST)
       receiverId:
         type: string
         description: Identifier of the person which received
       creationDatetime:
         type: string
-        description: Date and time of the creation of the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+        description: Date and time of the creation of the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) (automatically calculated)
       responseDatetime:
         type: string
-        description: Date and time of the response to the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+        description: Date and time of the response to the appointment [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) (automatically calculated)
       accepted:
         type: boolean
         description: Does the receiver accepter or not the appointment
