@@ -25,6 +25,7 @@ info:
     * In the HTTP headers the GAIA domain token :
     ```
     Authorization: Bearer <domain-token-value>
+    ```
 
     ### Changelog
     * v1.0.0: Initial proposal
