@@ -165,7 +165,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-    put:
+    patch:
       tags:
         - Appointments
       description: Updates an appointments
@@ -193,7 +193,6 @@ definitions:
     type: object
     required:
       - personId
-      - pushToken
       - authorizeMeetMe
     properties:
       personId:
@@ -234,6 +233,25 @@ definitions:
       accepted:
         type: boolean
         description: Does the receiver accepter or not the appointment
+      location:
+        $ref: '#/definitions/Location'
+  
+  Location:
+    description: Location data of the person
+    type: object
+    properties:
+      longitude:
+        type: string
+        description: Longitude of the person
+      latitude:
+        type: string
+        description: Latitude of the person
+      altitude:
+        type: string
+        description: Altitude of the person
+      text:
+        type: string
+        description: Description of the location
 
   Error:
     description: Error object with a code and a message
