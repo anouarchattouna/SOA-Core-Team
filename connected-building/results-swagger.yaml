@@ -1,0 +1,174 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Game results REST API for Connected Building
+  description: |
+    This is the REST API to save game results of "Le Grand Jeu MyBuilding".
+
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/).
+
+    This API is used by the mobile application developed by Schneider/Cardiweb
+    in the context of the **Connected Building** project, for the new buildings **Les Dunes**
+    in **Val de Fontenay**.
+
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, each response contains either a data or an error as the top level object.
+
+    ### Security
+    This API is secure using the in house **GAIA** solution.
+
+    For each call to the API you must provide:
+    * In the HTTP headers the GAIA domain token :
+    ```
+    Authorization: Bearer <domain-token-value>
+    ```
+
+    ### Changelog
+    * v1.0.0: initial proposal
+
+host: h-apps.socgen.com
+basePath: /mybuilding/results/api/v1
+tags:
+  - name: Results
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+
+## Path /results ###############################################################
+  /results:
+    get:
+      tags:
+        - Results
+      description: |
+        Returns all the results.
+      responses:
+        "200":
+          description: Success. Returns a list of results.
+          schema:
+            type: object
+            properties:
+              meta:
+                  properties:
+                    code:
+                      type: string
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Result'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - Results
+      description: Creates a result
+      parameters:
+        - name: body
+          in: body
+          description: Result data
+          required: true
+          schema:
+            $ref: '#/definitions/Result'
+      responses:
+        "201":
+          description: |
+            "Success. Returns the URL of the result in the location header."
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+## Path results/my-result #####################################################
+  /results/my-result:
+    get:
+      tags:
+        - Results
+      description: Returns the user result.
+      responses:
+        "200":
+          description: Success. Returns the user result.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/Result'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+        - Results
+      description: Updates the user result
+      parameters:
+        - name: body
+          in: body
+          description: Result data
+          required: true
+          schema:
+            $ref: '#/definitions/Result'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      tags:
+        - Results
+      description: Deletes the user result
+      responses:
+        "204":
+          description: Success (204=No Content)
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Result:
+    description: Result data
+    type: object
+    properties:
+      id:
+        type: string
+        description: Identifier of the result (Automatically generated at POST)
+      userId:
+        type: string
+        description: Sesame identifier of the user
+      result:
+        type: string
+        description: Result of the user
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
