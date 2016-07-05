@@ -198,7 +198,10 @@ definitions:
         description: Does the user authorize the meet me functionnality
       language:
         type: string
-        description: Language of the user, can be "fr" or "en"
+        description: Language of the user = ['fr', 'en']
+      operatingSystem:
+        type: string
+        description: Operating system of the device = ['iOS', 'Android', 'Windows']
 
   Appointment:
     description: Appointment data
