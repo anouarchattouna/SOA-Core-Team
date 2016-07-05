@@ -163,7 +163,7 @@ definitions:
         description: Identifier of the result (Automatically generated at POST)
       userId:
         type: string
-        description: Sesame identifier of the user
+        description: Sesame identifier of the user (Automtically added at POST from OpenID data)
       result:
         type: string
         description: Result of the user
