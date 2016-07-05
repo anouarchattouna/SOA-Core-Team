@@ -153,6 +153,10 @@ definitions:
   Result:
     description: Result data
     type: object
+    required:
+      - id
+      - userId
+      - result
     properties:
       id:
         type: string
