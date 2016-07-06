@@ -370,7 +370,7 @@ definitions:
         type: string
         description: Code GEST_IMM for the building (e.g. 32149 for Chassagne).
       floor:
-        type: integer
+        type: string
         description: Floor.
       office:
         type: string
