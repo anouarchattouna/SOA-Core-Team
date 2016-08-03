@@ -369,6 +369,12 @@ definitions:
       office:
         type: string
         description: The office of the person (e.g. "A03084").
+      function:
+        type: string
+        description: The function of the person.
+      show_picture:
+        type: boolean
+        description: True if and only if there is a picture to be displayed.
 
   Address:
     description: Address data.
