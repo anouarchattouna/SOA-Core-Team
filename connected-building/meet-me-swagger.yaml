@@ -161,7 +161,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-    patch:
+    put:
       tags:
         - Appointments
       description: Updates an appointments
