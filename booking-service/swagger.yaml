@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.2"
+  version: "1.0.3"
   title: Rooms REST API
   description: |
     This is the REST API to book a room for a meeting.
@@ -18,6 +18,7 @@ info:
     in each response is optional** and is reserved for future use to ease the parsing of response data.
 
     ### Changelog
+    * v1.0.3: Add configuration data to Room object
     * v1.0.2: Add country and site data to Room object
     * v1.0.1: Add office notion
     * v1.0.0: initial proposal
@@ -528,6 +529,9 @@ definitions:
       capacity:
         type: integer
         description: Max number of people in the room.
+      configuration:
+        type: string
+        description: Configuration of the room.
       equipments:
           $ref: '#/definitions/RoomEquipments'
 
