@@ -4,7 +4,7 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.11"
+  version: "1.0.12"
   title: Rooms REST API for Connected Building
   description: |
     This is the REST API to book a room for a meeting.
@@ -31,6 +31,8 @@ info:
     ```
 
     ### Changelog
+    * v1.0.12
+      * Add configuration data to Room object
     * v1.0.11
       * Add the local notion
     * v1.0.10
@@ -632,6 +634,9 @@ definitions:
       capacity:
         type: integer
         description: Max number of people in the room.
+      configuration:
+        type: string
+        description: Configuration of the room.
       equipments:
           $ref: '#/definitions/RoomEquipments'
 
