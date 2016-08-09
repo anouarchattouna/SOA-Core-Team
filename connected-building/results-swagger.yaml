@@ -72,26 +72,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-    post:
-      tags:
-        - Results
-      description: Creates a result
-      parameters:
-        - name: body
-          in: body
-          description: Result data
-          required: true
-          schema:
-            $ref: '#/definitions/Result'
-      responses:
-        "201":
-          description: |
-            "Success. Returns the URL of the result in the location header."
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
 ## Path results/my-result #####################################################
   /results/my-result:
     get:
@@ -110,6 +90,26 @@ paths:
                     type: string
               data:
                 $ref: '#/definitions/Result'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+    post:
+      tags:
+        - Results
+      description: Creates a result
+      parameters:
+        - name: body
+          in: body
+          description: Result data
+          required: true
+          schema:
+            $ref: '#/definitions/Result'
+      responses:
+        "201":
+          description: |
+            "Success. Returns the URL of the result in the location header."
         default:
           description: Unexpected error
           schema:
@@ -154,13 +154,9 @@ definitions:
     description: Result data
     type: object
     required:
-      - id
       - userId
       - result
     properties:
-      id:
-        type: string
-        description: Identifier of the result (Automatically generated at POST)
       userId:
         type: string
         description: Sesame identifier of the user (Automatically added at POST from OpenID data)
