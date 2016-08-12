@@ -688,24 +688,9 @@ definitions:
       bookingId:
         type: string
         description: Identifier of the booking.
-      country:
+      roomId:
         type: string
-        description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the room (e.g. "FRA")
-      site:
-        type: string
-        description: Site code of the room (e.g. "01")
-      building:
-        type: string
-        description: Building code of the room (e.g. "01")
-      area:
-        type: string
-        description: Area code of the room (e.g. "A")
-      level:
-        type: string
-        description: Level code of the room (e.g. "11")
-      local:
-        type: string
-        description: Local code of the room (e.g. "237")
+        description: Identifier of the room.
       startDatetime:
         type: string
         description: "Start datetime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the booking"
