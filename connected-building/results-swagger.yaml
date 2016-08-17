@@ -66,7 +66,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/Result'
+                  $ref: '#/definitions/ExtendedResult'
         default:
           description: Unexpected error
           schema:
@@ -115,25 +115,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-    put:
-      tags:
-        - Results
-      description: Updates the user result
-      parameters:
-        - name: body
-          in: body
-          description: Result data
-          required: true
-          schema:
-            $ref: '#/definitions/Result'
-      responses:
-        "200":
-          description: Success
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
     delete:
       tags:
         - Results
@@ -154,15 +135,27 @@ definitions:
     description: Result data
     type: object
     required:
-      - userId
+      - quizId
       - result
     properties:
-      userId:
-        type: string
-        description: Sesame identifier of the user (Automatically added at POST from OpenID data)
+      quizId:
+        type: integer
+        description: Identifier of the quizz (1 to 5)
       result:
         type: string
         description: Result of the user
+
+  ExtendedResult:
+    description: Result data
+    type: object
+    required:
+      - userId
+    allOf:
+      - $ref: "#/definitions/Result"
+    properties:
+      userId:
+        type: string
+        description: Sesame identifier of the user
 
   Error:
     description: Error object with a code and a message
