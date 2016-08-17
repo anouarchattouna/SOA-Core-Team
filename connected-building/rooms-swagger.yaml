@@ -301,6 +301,11 @@ paths:
           description: Search for private rooms or no.
           required: false
           type: boolean
+        - name: configuration
+          in: query
+          description: Search for a certain type of rooms.
+          required: false
+          type: string
       responses:
         "200":
           description: Success. Returns an array with the available rooms.
@@ -389,7 +394,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/Booking'
+                  $ref: '#/definitions/ExtendedBooking'
         default:
           description: Unexpected error
           schema:
@@ -434,7 +439,7 @@ paths:
                   code:
                     type: string
               data:
-                $ref: '#/definitions/Booking'
+                $ref: '#/definitions/ExtendedBooking'
         default:
           description: Unexpected error
           schema:
@@ -450,7 +455,7 @@ paths:
           description: Booking data
           required: true
           schema:
-            $ref: '#/definitions/Booking'
+            $ref: '#/definitions/ExtendedBooking'
       responses:
         "200":
           description: Success
@@ -502,7 +507,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/Booking'
+                  $ref: '#/definitions/ExtendedBooking'
         default:
           description: Unexpected error
           schema:
@@ -674,20 +679,11 @@ definitions:
     description: "Booking/schedule of a room for a meeting"
     type: object
     required:
-      - bookingId
-      - country
-      - site
-      - building
-      - area
-      - level
-      - local
+      - roomId
       - startDatetime
       - endDatetime
       - owner
     properties:
-      bookingId:
-        type: string
-        description: Identifier of the booking.
       roomId:
         type: string
         description: Identifier of the room.
@@ -713,6 +709,42 @@ definitions:
         items:
           type: string
         description: List of the optional participants of the meeting (emails of the participants)
+        
+  ExtendedBooking:
+    description: "Booking/schedule of a room for a meeting"
+    type: object
+    required:
+      - bookingId
+      - country
+      - site
+      - building
+      - area
+      - level
+      - local
+    allOf:
+      - $ref: "#/definitions/Booking"
+    properties:
+      bookingId:
+        type: string
+        description: Identifier of the booking.
+      country:
+        type: string
+        description: Country code [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) of the room (e.g. "FRA")
+      site:
+        type: string
+        description: Site code of the room (e.g. "01")
+      building:
+        type: string
+        description: Building code of the room (e.g. "01")
+      area:
+        type: string
+        description: Area code of the room (e.g. "A")
+      level:
+        type: string
+        description: Level code of the room (e.g. "11")
+      local:
+        type: string
+        description: Local code of the room (e.g. "237")
 
   ParticipantAvailability:
     description: Indication of the availability of a participant of a meeting
