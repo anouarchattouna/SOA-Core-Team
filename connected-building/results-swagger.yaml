@@ -31,7 +31,7 @@ info:
     * v1.0.0: initial proposal
 
 host: h-apps.socgen.com
-basePath: /mybuilding/results/api/v1
+basePath: /mybuilding/game/api/v1
 tags:
   - name: Results
 schemes:
@@ -40,6 +40,17 @@ consumes:
   - application/json
 produces:
   - application/json
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  quizzId:
+    name: quizzId
+    in: path
+    description: The identifier of the quizz
+    type: integer
+    required: true
 
 ################################################################################
 #                                           Paths                              #
@@ -72,8 +83,8 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-## Path results/my-result #####################################################
-  /results/my-result:
+## Path results/my-results #####################################################
+  /results/my-results:
     get:
       tags:
         - Results
@@ -89,7 +100,7 @@ paths:
                   code:
                     type: string
               data:
-                $ref: '#/definitions/Result'
+                $ref: '#/definitions/ExtendedResult'
         default:
           description: Unexpected error
           schema:
@@ -114,7 +125,32 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-
+            
+## Path results/my-results/{quizzId} ###########################################
+  /results/my-results/{quizzId}:
+    parameters:
+      - $ref: '#/parameters/quizzId'
+    get:
+      tags:
+        - Results
+      description: Returns the user result.
+      responses:
+        "200":
+          description: Success. Returns the user result.
+          schema:
+            type: object
+            properties:
+              meta:
+                properties:
+                  code:
+                    type: string
+              data:
+                $ref: '#/definitions/ExtendedResult'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+          
     delete:
       tags:
         - Results
@@ -135,10 +171,10 @@ definitions:
     description: Result data
     type: object
     required:
-      - quizId
+      - quizzId
       - result
     properties:
-      quizId:
+      quizzId:
         type: integer
         description: Identifier of the quizz (1 to 5)
       result:
