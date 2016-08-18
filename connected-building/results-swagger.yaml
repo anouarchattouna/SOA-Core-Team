@@ -45,10 +45,10 @@ produces:
 #                                           Parameters                         #
 ################################################################################
 parameters:
-  quizzId:
-    name: quizzId
+  quizId:
+    name: quizId
     in: path
-    description: The identifier of the quizz
+    description: The identifier of the quiz
     type: integer
     required: true
 
@@ -126,10 +126,10 @@ paths:
           schema:
             $ref: '#/definitions/Error'
             
-## Path results/my-results/{quizzId} ###########################################
-  /results/my-results/{quizzId}:
+## Path results/my-results/{quizId} ###########################################
+  /results/my-results/{quizId}:
     parameters:
-      - $ref: '#/parameters/quizzId'
+      - $ref: '#/parameters/quizId'
     get:
       tags:
         - Results
@@ -171,12 +171,12 @@ definitions:
     description: Result data
     type: object
     required:
-      - quizzId
+      - quizId
       - result
     properties:
-      quizzId:
+      quizId:
         type: integer
-        description: Identifier of the quizz (1 to 5)
+        description: Identifier of the quiz (1 to 5)
       result:
         type: string
         description: Result of the user
