@@ -88,10 +88,10 @@ paths:
     get:
       tags:
         - Results
-      description: Returns the user result.
+      description: Returns the user results.
       responses:
         "200":
-          description: Success. Returns the user result.
+          description: Success. Returns the user results.
           schema:
             type: object
             properties:
