@@ -100,7 +100,9 @@ paths:
                   code:
                     type: string
               data:
-                $ref: '#/definitions/ExtendedResult'
+                type: array
+                items:
+                  $ref: '#/definitions/ExtendedResult'
         default:
           description: Unexpected error
           schema:
