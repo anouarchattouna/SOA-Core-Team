@@ -84,7 +84,7 @@ paths:
 
   /approvers:
     parameters:
-      - name: approverId
+      - name: userId
         in: query
         description: User's id for who the approvers are search
         required: true
