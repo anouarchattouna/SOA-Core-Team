@@ -1,0 +1,491 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0.0"
+  title: Out of Office request managment REST API
+  description: |
+    This is the REST API to to manage out of office resquest.
+    You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/).
+    Just copy/paste the content of this YAML in the left pane of the Swagger editor.
+    The right pane will show you the well formatted documentation.
+    The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
+    For example, **each response contains either a data or an error as the top level object**. The **meta attribute provided
+    in each response is optional** and is reserved for future use to ease the parsing of response data.
+    ### Security
+    This API is secure using OAuth2 solution.
+    For each call to the API you must provide:
+    * In the HTTP headers the OAuth2 domain token :
+    ```
+    Authorization: Bearer <domain-token-value>
+    ```
+    ### Changelog
+    * v1.0.0: initial proposal
+host: h-apps.socgen.com
+basePath: /ooorm/api/v1
+tags:
+  - name: User
+  - name: Balance
+  - name: Request
+  - name: Approver
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+
+################################################################################
+#                                           Parameters                         #
+################################################################################
+parameters:
+  userId:
+    name: userId
+    in: path
+    description: The technical identifier of the user
+    type: string
+    required: true
+
+  requestId:
+    name: requestId
+    in: path
+    description: The technical identifier of the request
+    type: string
+    required: true
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+paths:
+  /users/{userId}:
+    parameters:
+      - $ref: '#/parameters/userId'
+    get:
+      tags:
+        - User
+      description: Returns a user.
+      responses:
+        "200":
+          description: Success. Returns  a user.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              data:
+                $ref: '#/definitions/User'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /approvers:
+    parameters:
+      - name: approverId
+        in: query
+        description: User's id for who the approvers are search
+        required: true
+        type: string
+    get:
+      tags:
+        - Approver
+      description: Returns a list of approvers.
+      responses:
+        "200":
+          description: Success. Returns  a user.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /balance:
+    parameters:
+      - name: ownerId
+        in: query
+        description: User's id for the balance who are searched
+        required: true
+        type: string
+    get:
+      tags:
+        - Balance
+      description: Returns the balance of the user in param.
+      responses:
+        "200":
+          description: Success. Returns the balance.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              data:
+                $ref: '#/definitions/Balance'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /requests:
+    get:
+      parameters:
+        - name: ownerId
+          in: query
+          description: User's id for the user who owned the requests
+          required: true
+          type: string
+        - name: approverId
+          in: query
+          description: User's id for the user who approved the requests
+          required: true
+          type: string
+        - name: status
+          in: query
+          required: true
+          type: string
+          description: Statuts of te request
+          enum:
+            - Created
+            - ValidationPending
+            - Validated
+            - Refused
+            - DeletionPending
+            - DeletionValidated
+            - DeletionRefused
+        - name: startDate
+          in: query
+          description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search."
+          required: true
+          type: string
+          format: date
+        - name: endDate
+          in: query
+          description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search."
+          required: true
+          type: string
+          format: date
+      tags:
+        - Request
+      description: Returns the requests of the user in param for the time slot in param.
+      responses:
+        "200":
+          description: Success. Returns the requests.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/RequestResult'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      tags:
+        - Request
+      description: Creates a request
+      parameters:
+        - name: body
+          in: body
+          description: request data
+          required: true
+          schema:
+            $ref: '#/definitions/RequestPost'
+      responses:
+        "201":
+          description: "Success. Returns the URL of the request in the location header."
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /requests/{requestId}:
+    parameters:
+      - $ref: '#/parameters/requestId'
+    get:
+      tags:
+        - Request
+      description: Returns a request
+      responses:
+        "200":
+          description: Success. Returns the request.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              data:
+                $ref: '#/definitions/RequestResult'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+        - Request
+      description: Updates a request
+      parameters:
+        - name: body
+          in: body
+          description: Request data
+          required: true
+          schema:
+            $ref: '#/definitions/RequestPut'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    patch:
+      tags:
+        - Request
+      description: Updates a request
+      parameters:
+        - name: body
+          in: body
+          description: Request data
+          required: true
+          schema:
+            description: Out of office patch request data.
+            type: object
+            required:
+              - id
+              - status
+            properties:
+              id:
+                type: string
+                description: Id of the request
+              status:
+                $ref: '#/definitions/RequestStatus'
+              comment:
+                type: string
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      tags:
+        - Request
+      description: Deletes a request
+      responses:
+        "204":
+          description: Success (204=No Content)
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  User:
+    description: User data.
+    type: object
+    required:
+      - id
+      - firstName
+      - lastName
+    properties:
+      id:
+        type: string
+        description: User identifiant
+      firstName:
+        type: string
+        description: First name of the user
+      lastName:
+        type: string
+        description: Last name of the user
+      roles:
+        type: object
+        description: Roles of the user
+        properties:
+          manager:
+            type: boolean
+
+
+  Balance:
+    description: Balance data.
+    type: object
+    required:
+      - ownerId
+      - comment
+    properties:
+      ownerId:
+        type: string
+        description: Owner identifiant
+      comment:
+        type: string
+        description: Balance comment
+      vacations:
+        type: number
+      RTT:
+        type: number
+
+#  Request:
+#    description: Out of office request data.
+#    type: object
+#    required:
+#      - ownerId
+#      - approverId
+#      - fromDate
+#      - toDate
+#      - status
+#      - reason
+#    properties:
+#      id:
+#        type: string
+#        description: Id of the request
+#      ownerId:
+#        type: string
+#        description: Owner id
+#      ownerDisplay:
+#        type: string
+#        description: Owner display name
+#      approverId:
+#        type: string
+#        description: Approver id
+#      approverDisplay:
+#        type: string
+#        description: Approver display name
+#      fromDate:
+#        type: string
+#        format: date
+#        description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+#      fromAfternoon:
+#        type: boolean
+#        description: "The request began the aftenoon only"
+#      toDate:
+#        type: string
+#        format: date
+#        description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+#      toMorning:
+#        type: boolean
+#        description: "The request ended the the morning"
+#      status:
+#        $ref: '#/definitions/RequestStatus'
+#      reason:
+#        type: string
+#        description: Reason of the request
+#      comment:
+#        type: string
+
+  RequestResult:
+    description: Out of office request data
+    type: object
+    required:
+      - approverDisplay
+      - ownerDisplay
+    allOf:
+      - $ref: "#/definitions/RequestPut"
+    properties:
+      comment:
+        type: string
+      approverDisplay:
+        type: string
+        description: Approver display name
+      ownerDisplay:
+        type: string
+        description: Owner display name
+
+  RequestPut:
+    description: Out of office request data
+    type: object
+    required:
+      - id
+    allOf:
+      - $ref: "#/definitions/RequestPost"
+    properties:
+      id:
+        type: string
+        description: Id of the request
+
+  RequestPost:
+    description: Out of office request data.
+    type: object
+    required:
+      - ownerId
+      - approverId
+      - fromDate
+      - toDate
+      - status
+      - reason
+    properties:
+      ownerId:
+        type: string
+        description: Owner id
+      approverId:
+        type: string
+        description: Approver id
+      fromDate:
+        type: string
+        format: date
+        description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+      fromAfternoon:
+        type: boolean
+        description: "The request began the aftenoon only"
+      toDate:
+        type: string
+        format: date
+        description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+      toMorning:
+        type: boolean
+        description: "The request ended the the morning"
+      status:
+        $ref: '#/definitions/RequestStatus'
+      reason:
+        type: string
+        description: Reason of the request
+
+  RequestStatus:
+    type: string
+    description: Statuts of te request
+    enum:
+      - Created
+      - ValidationPending
+      - Validated
+      - Refused
+      - DeletionPending
+      - DeletionValidated
+      - DeletionRefused
+
+  Meta:
+    description: Messages and status in metadata
+    type: object
+    properties:
+      code:
+        type: string
+      messages:
+        type: array
+        items:
+          type: string
+
+  Error:
+    description: Error object with a code and a message
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
