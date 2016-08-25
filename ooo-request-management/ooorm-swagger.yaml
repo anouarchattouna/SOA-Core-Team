@@ -4,16 +4,25 @@ swagger: "2.0"
 #                              API Information                                 #
 ################################################################################
 info:
-  version: "1.0.0"
-  title: Out of Office request managment REST API
+
+  version: "1.0.2"
+
+  title: Out of Office Request Management REST API
+
   description: |
-    This is the REST API to to manage out of office resquest.
+    This is the REST API to manage Out Of Office requests, such as requests for vacations by employees, requests validations by managers...
+    The backend of the API is currently Gershwin, but the API is designed to be agnostic of Gershwin
+    (because on some international locations, the backend may differ and it is required that the mobile application
+    must not be impacted by the actual implementation of the backend; the API must hide the actual implementation).
+
     You can view the content of this YAML file in the [Swagger editor](http://editor.swagger.io/).
     Just copy/paste the content of this YAML in the left pane of the Swagger editor.
     The right pane will show you the well formatted documentation.
+    
     The design of the API is based on the [Google JSON style guide](https://google.github.io/styleguide/jsoncstyleguide.xml).
     For example, **each response contains either a data or an error as the top level object**. The **meta attribute provided
     in each response is optional** and is reserved for future use to ease the parsing of response data.
+
     ### Security
     This API is secure using OAuth2 solution.
     For each call to the API you must provide:
@@ -21,17 +30,27 @@ info:
     ```
     Authorization: Bearer <domain-token-value>
     ```
+
     ### Changelog
     * v1.0.0: initial proposal
-host: h-apps.socgen.com
+    * v1.0.1: proposal 1 by Fabrice
+    * v1.0.2: proposal 2 by Fabrice (with dedicated RequestForXXX defintions and a dedicated URL for the update of the status)
+
+
+host: to.be.defined
+
 basePath: /ooorm/api/v1
+
 tags:
-  - name: User
-  - name: Balance
   - name: Request
+  - name: User
   - name: Approver
+  - name: Balance
+  - name: Status
+
 schemes:
   - https
+
 consumes:
   - application/json
 produces:
@@ -42,24 +61,27 @@ produces:
 #                                           Parameters                         #
 ################################################################################
 parameters:
+
   userId:
     name: userId
     in: path
-    description: The technical identifier of the user
+    description: Technical identifier of the user
     type: string
     required: true
 
   requestId:
     name: requestId
     in: path
-    description: The technical identifier of the request
+    description: Technical identifier of the request
     type: string
     required: true
+
 
 ################################################################################
 #                                           Paths                              #
 ################################################################################
 paths:
+
   /users/{userId}:
     parameters:
       - $ref: '#/parameters/userId'
@@ -69,7 +91,7 @@ paths:
       description: Returns a user.
       responses:
         "200":
-          description: Success. Returns  a user.
+          description: Success. Returns the user.
           schema:
             type: object
             properties:
@@ -82,20 +104,21 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
   /approvers:
     parameters:
       - name: userId
         in: query
-        description: User's id for who the approvers are search
+        description: User's id for whom the approvers are searched
         required: true
         type: string
     get:
       tags:
         - Approver
-      description: Returns a list of approvers.
+      description: Returns the list of approvers for a user.
       responses:
         "200":
-          description: Success. Returns  a user.
+          description: Success. Returns the list of approvers for the user.
           schema:
             type: object
             properties:
@@ -104,26 +127,27 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/User'
+                  $ref: '#/definitions/Approver'
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
 
+
   /balance:
     parameters:
-      - name: ownerId
+      - name: userId
         in: query
-        description: User's id for the balance who are searched
+        description: User's id for whom the balance is searched
         required: true
         type: string
     get:
       tags:
         - Balance
-      description: Returns the balance of the user in param.
+      description: Returns the balance of a user.
       responses:
         "200":
-          description: Success. Returns the balance.
+          description: Success. Returns the balance of the user.
           schema:
             type: object
             properties:
@@ -136,24 +160,25 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
   /requests:
     get:
       parameters:
         - name: ownerId
           in: query
-          description: User's id for the user who owned the requests
-          required: true
+          description: User's id of the owner of the requests (the requestor)
+          required: false
           type: string
         - name: approverId
           in: query
-          description: User's id for the user who approved the requests
-          required: true
+          description: User's id of the approver of the requests. Mandatory to search requests to be validated by an approver. 
+          required: false
           type: string
         - name: status
           in: query
-          required: true
+          required: false
           type: string
-          description: Statuts of te request
+          description: Status of the requests. Mandatory to search requests with a given status (for example those with pending validation).
           enum:
             - Created
             - ValidationPending
@@ -165,21 +190,21 @@ paths:
         - name: startDate
           in: query
           description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search."
-          required: true
+          required: false
           type: string
           format: date
         - name: endDate
           in: query
           description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) to be used for the search."
-          required: true
+          required: false
           type: string
           format: date
       tags:
         - Request
-      description: Returns the requests of the user in param for the time slot in param.
+      description: Returns a list of requests which match some params.
       responses:
         "200":
-          description: Success. Returns the requests.
+          description: Success. Returns the list of requests which match the provided params.
           schema:
             type: object
             properties:
@@ -188,11 +213,12 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/RequestResult'
+                  $ref: '#/definitions/RequestForGET'
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+
     post:
       tags:
         - Request
@@ -200,17 +226,18 @@ paths:
       parameters:
         - name: body
           in: body
-          description: request data
+          description: Request data
           required: true
           schema:
-            $ref: '#/definitions/RequestPost'
+            $ref: '#/definitions/RequestForPOST'
       responses:
         "201":
-          description: "Success. Returns the URL of the request in the location header."
+          description: "Success. Returns the URL of the created request in the HTTP location header."
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+
 
   /requests/{requestId}:
     parameters:
@@ -228,7 +255,7 @@ paths:
               meta:
                 $ref: '#/definitions/Meta'
               data:
-                $ref: '#/definitions/RequestResult'
+                $ref: '#/definitions/RequestForGET'
         default:
           description: Unexpected error
           schema:
@@ -237,45 +264,14 @@ paths:
     put:
       tags:
         - Request
-      description: Updates a request
+      description: "Updates a request. To specifically update the status of the request, use the request/{id}/status URL."
       parameters:
         - name: body
           in: body
           description: Request data
           required: true
           schema:
-            $ref: '#/definitions/RequestPut'
-      responses:
-        "200":
-          description: Success
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-    patch:
-      tags:
-        - Request
-      description: Updates a request
-      parameters:
-        - name: body
-          in: body
-          description: Request data
-          required: true
-          schema:
-            description: Out of office patch request data.
-            type: object
-            required:
-              - id
-              - status
-            properties:
-              id:
-                type: string
-                description: Id of the request
-              status:
-                $ref: '#/definitions/RequestStatus'
-              comment:
-                type: string
+            $ref: '#/definitions/RequestForPUT'
       responses:
         "200":
           description: Success
@@ -296,10 +292,36 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
+  /requests/{requestId}/status:
+    parameters:
+      - $ref: '#/parameters/requestId'
+    put:
+      tags:
+        - Status
+      description: Updates the status of a request (to validate or refuse a request for example)
+      parameters:
+        - name: body
+          in: body
+          description: Status data
+          required: true
+          schema:
+            $ref: '#/definitions/RequestStatusForPUT'
+      responses:
+        "200":
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+
 ################################################################################
 #                                 Definitions                                  #
 ################################################################################
 definitions:
+
   User:
     description: User data.
     type: object
@@ -310,7 +332,7 @@ definitions:
     properties:
       id:
         type: string
-        description: User identifiant
+        description: Id of the user
       firstName:
         type: string
         description: First name of the user
@@ -324,105 +346,97 @@ definitions:
           manager:
             type: boolean
 
+  Approver:
+    description: Approver data.
+    type: object
+    required:
+      - id
+      - firstName
+      - lastName
+    properties:
+      id:
+        type: string
+        description: Id of the approver
+      firstName:
+        type: string
+        description: First name of the approver
+      lastName:
+        type: string
+        description: Last name of the approver
 
   Balance:
     description: Balance data.
     type: object
     required:
-      - ownerId
+      - userId
       - comment
     properties:
-      ownerId:
+      userId:
         type: string
-        description: Owner identifiant
+        description: Id of the user
       comment:
         type: string
         description: Balance comment
       vacations:
         type: number
+        description: Balance for vacations
       RTT:
         type: number
+        description: Balance for RTT
 
-#  Request:
-#    description: Out of office request data.
-#    type: object
-#    required:
-#      - ownerId
-#      - approverId
-#      - fromDate
-#      - toDate
-#      - status
-#      - reason
-#    properties:
-#      id:
-#        type: string
-#        description: Id of the request
-#      ownerId:
-#        type: string
-#        description: Owner id
-#      ownerDisplay:
-#        type: string
-#        description: Owner display name
-#      approverId:
-#        type: string
-#        description: Approver id
-#      approverDisplay:
-#        type: string
-#        description: Approver display name
-#      fromDate:
-#        type: string
-#        format: date
-#        description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
-#      fromAfternoon:
-#        type: boolean
-#        description: "The request began the aftenoon only"
-#      toDate:
-#        type: string
-#        format: date
-#        description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
-#      toMorning:
-#        type: boolean
-#        description: "The request ended the the morning"
-#      status:
-#        $ref: '#/definitions/RequestStatus'
-#      reason:
-#        type: string
-#        description: Reason of the request
-#      comment:
-#        type: string
-
-  RequestResult:
-    description: Out of office request data
+  RequestForGET:
+    description: Request data as result of the GET operation (GET=search).
     type: object
-    required:
-      - approverDisplay
-      - ownerDisplay
-    allOf:
-      - $ref: "#/definitions/RequestPut"
     properties:
-      comment:
+      id:      
         type: string
-      approverDisplay:
+        description: Id of the request. 
+      ownerId:
         type: string
-        description: Approver display name
-      ownerDisplay:
+        description: Id of the owner of the request
+      ownerDisplayName:
         type: string
-        description: Owner display name
+        description: Display name of the owner of the request.
+      approverId:
+        type: string
+        description: Id of the approver of the request
+      approverDisplayName:
+        type: string
+        description: Display name of the approver of the request.
+      fromDate:
+        type: string
+        format: date
+        description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+      fromAfternoon:
+        type: boolean
+        description: "Does the request begin the aftenoon only ?"
+      toDate:
+        type: string
+        format: date
+        description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+      toMorning:
+        type: boolean
+        description: "Does the request end the morning only ?"
+      status:
+        $ref: '#/definitions/RequestStatus'
+      reason:
+        type: string
+        description: "Reason (=type) of the request (vacations, RTT...)"
+      createdAt:
+        type: string
+        format: date
+        description: "Date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the creation of the request by the owner. Filled during GET result. Never used as input parameter."
+      updatedAt:
+        type: string
+        format: date
+        description: "Date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the last update of the request either, by the owner or the approver. Filled during GET result. Never used as input parameter."
+      validatedORefusedAt:
+        type: string
+        format: date
+        description: "Date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the validation or the refusal of the request by the approver. Filled during GET result. Never used as input parameter."
 
-  RequestPut:
-    description: Out of office request data
-    type: object
-    required:
-      - id
-    allOf:
-      - $ref: "#/definitions/RequestPost"
-    properties:
-      id:
-        type: string
-        description: Id of the request
-
-  RequestPost:
-    description: Out of office request data.
+  RequestForPOST:
+    description: Request data as input for the POST operation (POST=create).
     type: object
     required:
       - ownerId
@@ -434,33 +448,75 @@ definitions:
     properties:
       ownerId:
         type: string
-        description: Owner id
+        description: Id of the owner of the request
       approverId:
         type: string
-        description: Approver id
+        description: Id of the approver of the request
       fromDate:
         type: string
         format: date
         description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
       fromAfternoon:
         type: boolean
-        description: "The request began the aftenoon only"
+        description: "Does the request begin the aftenoon only ?"
       toDate:
         type: string
         format: date
         description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
       toMorning:
         type: boolean
-        description: "The request ended the the morning"
+        description: "Does the request end the morning only ?"
       status:
         $ref: '#/definitions/RequestStatus'
       reason:
         type: string
-        description: Reason of the request
+        description: "Reason (=type) of the request (vacations, RTT...)"
+
+  RequestForPUT:
+    description: Request data as input for the PUT operation (PUT=update).
+    type: object
+    required:
+      - id
+      - ownerId
+      - approverId
+      - fromDate
+      - toDate
+      - status
+      - reason
+    properties:
+      id:      
+        type: string
+        description: Id of the request. 
+      ownerId:
+        type: string
+        description: Id of the owner of the request
+      approverId:
+        type: string
+        description: Id of the approver of the request
+      fromDate:
+        type: string
+        format: date
+        description: "Start date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+      fromAfternoon:
+        type: boolean
+        description: "Does the request begin the aftenoon only ?"
+      toDate:
+        type: string
+        format: date
+        description: "End date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the request"
+      toMorning:
+        type: boolean
+        description: "Does the request end the morning only ?"
+      status:
+        $ref: '#/definitions/RequestStatus'
+      reason:
+        type: string
+        description: "Reason (=type) of the request (vacations, RTT...)"
+
 
   RequestStatus:
     type: string
-    description: Statuts of te request
+    description: Status of the request
     enum:
       - Created
       - ValidationPending
@@ -470,8 +526,30 @@ definitions:
       - DeletionValidated
       - DeletionRefused
 
+
+  RequestStatusForPUT:
+    description: Status data as input for the PUT operation (PUT=update).
+    type: object
+    required:
+      - id
+      - status
+      - userId
+    properties:
+      id:
+        type: string
+        description: Id of the request
+      status:
+        $ref: '#/definitions/RequestStatus'
+      userId:
+        type: string
+        description: Id of the user who updates the status (can be the owner or the approver)
+      comment:
+        type: string
+        description: Comment for the update of the status (specially useful when a request is refused)
+
+
   Meta:
-    description: Messages and status in metadata
+    description: Code and list of messages in metadata
     type: object
     properties:
       code:
@@ -480,6 +558,7 @@ definitions:
         type: array
         items:
           type: string
+
 
   Error:
     description: Error object with a code and a message
