@@ -95,12 +95,6 @@ paths:
           required: true
           description: The search request.
           type: string
-        - name: start
-          in: query
-          required: false
-          description: Returns persons starting at this parameter. Default value is zero.
-          type: integer
-          default: 0
         - name: count
           in: query
           required: false
