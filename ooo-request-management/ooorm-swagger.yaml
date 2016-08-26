@@ -5,7 +5,7 @@ swagger: "2.0"
 ################################################################################
 info:
 
-  version: "1.0.2"
+  version: "1.0.3"
 
   title: Out of Office Request Management REST API
 
@@ -35,6 +35,7 @@ info:
     * v1.0.0: initial proposal
     * v1.0.1: proposal 1 by Fabrice
     * v1.0.2: proposal 2 by Fabrice (with dedicated RequestForXXX defintions and a dedicated URL for the update of the status)
+    * v1.0.3: ownerId property removed from the RequestForPUT definition because it is not possible to update the owner of a request
 
 
 host: to.be.defined
@@ -477,7 +478,6 @@ definitions:
     type: object
     required:
       - id
-      - ownerId
       - approverId
       - fromDate
       - toDate
@@ -487,9 +487,6 @@ definitions:
       id:      
         type: string
         description: Id of the request. 
-      ownerId:
-        type: string
-        description: Id of the owner of the request
       approverId:
         type: string
         description: Id of the approver of the request
@@ -568,3 +565,4 @@ definitions:
         type: string
       message:
         type: string
+
