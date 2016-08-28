@@ -5,7 +5,7 @@ swagger: "2.0"
 ################################################################################
 info:
 
-  version: "1.0.3"
+  version: "1.0.4"
 
   title: Out of Office Request Management REST API
 
@@ -36,6 +36,7 @@ info:
     * v1.0.1: proposal 1 by Fabrice
     * v1.0.2: proposal 2 by Fabrice (with dedicated RequestForXXX defintions and a dedicated URL for the update of the status)
     * v1.0.3: ownerId property removed from the RequestForPUT definition because it is not possible to update the owner of a request
+    * v1.0.4: path added for enums/reasons
 
 
 host: to.be.defined
@@ -317,6 +318,29 @@ paths:
             $ref: '#/definitions/Error'
 
 
+  /enums/reasons:
+    get:
+      tags:
+        - Request
+      description: "Returns the list of possible reasons (vacations, RTT...)"
+      responses:
+        "200":
+          description: Success. Returns the list of possible reasons.
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Reason'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
 
 ################################################################################
 #                                 Definitions                                  #
@@ -543,6 +567,16 @@ definitions:
       comment:
         type: string
         description: Comment for the update of the status (specially useful when a request is refused)
+
+
+  Reason:
+    description: "Reason of a request (vacation, RTT...)"
+    type: object
+    properties:
+      code:
+        type: string
+      label:
+        type: string
 
 
   Meta:
