@@ -118,10 +118,10 @@ paths:
     get:
       tags:
         - Approver
-      description: Returns the list of approvers for a user.
+      description: Returns the list of approvers for a user. The default approver is the 1st of the list.
       responses:
         "200":
-          description: Success. Returns the list of approvers for the user.
+          description: Success. Returns the list of approvers for the user. The default approver is the 1st of the list.
           schema:
             type: object
             properties:
