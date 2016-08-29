@@ -5,7 +5,7 @@ swagger: "2.0"
 ################################################################################
 info:
 
-  version: "1.0.4"
+  version: "1.0.5"
 
   title: Out of Office Request Management REST API
 
@@ -37,6 +37,7 @@ info:
     * v1.0.2: proposal 2 by Fabrice (with dedicated RequestForXXX defintions and a dedicated URL for the update of the status)
     * v1.0.3: ownerId property removed from the RequestForPUT definition because it is not possible to update the owner of a request
     * v1.0.4: path added for enums/reasons
+    * v1.0.5: Comment property added in RequestForGET, some date=>date-time (createdAt, updatedAt...), removal of status in RequestForPOST and RequestForPUT (status must be updated only via the dedicatd status URL)
 
 
 host: to.be.defined
@@ -447,18 +448,21 @@ definitions:
       reason:
         type: string
         description: "Reason (=type) of the request (vacations, RTT...)"
+      comment:
+        type: string
+        description: Comment (specially useful when a request is refused)
       createdAt:
         type: string
-        format: date
-        description: "Date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the creation of the request by the owner. Filled during GET result. Never used as input parameter."
+        format: date-time
+        description: "DateTime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the creation of the request by the owner. Filled during GET result. Never used as input parameter."
       updatedAt:
         type: string
-        format: date
-        description: "Date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the last update of the request either, by the owner or the approver. Filled during GET result. Never used as input parameter."
+        format: date-time
+        description: "DateTime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the last update of the request either, by the owner or the approver. Filled during GET result. Never used as input parameter."
       validatedORefusedAt:
         type: string
-        format: date
-        description: "Date [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the validation or the refusal of the request by the approver. Filled during GET result. Never used as input parameter."
+        format: date-time
+        description: "DateTime [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) of the validation or the refusal of the request by the approver. Filled during GET result. Never used as input parameter."
 
   RequestForPOST:
     description: Request data as input for the POST operation (POST=create).
@@ -468,7 +472,6 @@ definitions:
       - approverId
       - fromDate
       - toDate
-      - status
       - reason
     properties:
       ownerId:
@@ -491,8 +494,6 @@ definitions:
       toMorning:
         type: boolean
         description: "Does the request end the morning only ?"
-      status:
-        $ref: '#/definitions/RequestStatus'
       reason:
         type: string
         description: "Reason (=type) of the request (vacations, RTT...)"
@@ -505,7 +506,6 @@ definitions:
       - approverId
       - fromDate
       - toDate
-      - status
       - reason
     properties:
       id:      
@@ -528,8 +528,6 @@ definitions:
       toMorning:
         type: boolean
         description: "Does the request end the morning only ?"
-      status:
-        $ref: '#/definitions/RequestStatus'
       reason:
         type: string
         description: "Reason (=type) of the request (vacations, RTT...)"
