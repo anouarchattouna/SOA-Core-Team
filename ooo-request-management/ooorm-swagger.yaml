@@ -187,6 +187,7 @@ paths:
             - ValidationPending
             - Validated
             - Refused
+            - HRModified
             - DeletionPending
             - DeletionValidated
             - DeletionRefused
@@ -541,6 +542,7 @@ definitions:
       - ValidationPending
       - Validated
       - Refused
+      - HRModified
       - DeletionPending
       - DeletionValidated
       - DeletionRefused
@@ -597,4 +599,3 @@ definitions:
         type: string
       message:
         type: string
-
