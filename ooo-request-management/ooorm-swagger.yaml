@@ -444,6 +444,9 @@ definitions:
       toMorning:
         type: boolean
         description: "Does the request end the morning only ?"
+      numberOfDays:
+        type: number
+        description: "The number of days of this request"
       status:
         $ref: '#/definitions/RequestStatus'
       reason:
